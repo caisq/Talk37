@@ -1,0 +1,635 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KeyboardLayout Id="Control_en-US_Qwerty" Rows="4" Columns="12">
+  <Version>
+    <Number>4</Number>
+  </Version>
+  <Language>
+    <Name>English</Name>
+    <Code>en-US</Code>
+  </Language>
+  <TextKeys>
+    <TextKey Id="a" Label="a" Text="a">
+      <Modifiers>
+        <Shift KeyRef="A" />
+        <CapsLock KeyRef="A" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="b" Label="b" Text="b">
+      <Modifiers>
+        <Shift KeyRef="B" />
+        <CapsLock KeyRef="B" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="c" Label="c" Text="c">
+      <Modifiers>
+        <Shift KeyRef="C" />
+        <CapsLock KeyRef="C" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="d" Label="d" Text="d">
+      <Modifiers>
+        <Shift KeyRef="D" />
+        <CapsLock KeyRef="D" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="e" Label="e" Text="e">
+      <Modifiers>
+        <Shift KeyRef="E" />
+        <CapsLock KeyRef="E" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="f" Label="f" Text="f">
+      <Modifiers>
+        <Shift KeyRef="F" />
+        <CapsLock KeyRef="F" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="g" Label="g" Text="g">
+      <Modifiers>
+        <Shift KeyRef="G" />
+        <CapsLock KeyRef="G" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="h" Label="h" Text="h">
+      <Modifiers>
+        <Shift KeyRef="H" />
+        <CapsLock KeyRef="H" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="i" Label="i" Text="i">
+      <Modifiers>
+        <Shift KeyRef="I" />
+        <CapsLock KeyRef="I" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="j" Label="j" Text="j">
+      <Modifiers>
+        <Shift KeyRef="J" />
+        <CapsLock KeyRef="J" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="k" Label="k" Text="k">
+      <Modifiers>
+        <Shift KeyRef="K" />
+        <CapsLock KeyRef="K" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="l" Label="l" Text="l">
+      <Modifiers>
+        <Shift KeyRef="L" />
+        <CapsLock KeyRef="L" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="m" Label="m" Text="m">
+      <Modifiers>
+        <Shift KeyRef="M" />
+        <CapsLock KeyRef="M" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="n" Label="n" Text="n">
+      <Modifiers>
+        <Shift KeyRef="N" />
+        <CapsLock KeyRef="N" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="o" Label="o" Text="o">
+      <Modifiers>
+        <Shift KeyRef="O" />
+        <CapsLock KeyRef="O" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="p" Label="p" Text="p">
+      <Modifiers>
+        <Shift KeyRef="P" />
+        <CapsLock KeyRef="P" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="q" Label="q" Text="q">
+      <Modifiers>
+        <Shift KeyRef="Q" />
+        <CapsLock KeyRef="Q" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="r" Label="r" Text="r">
+      <Modifiers>
+        <Shift KeyRef="R" />
+        <CapsLock KeyRef="R" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="s" Label="s" Text="s">
+      <Modifiers>
+        <Shift KeyRef="S" />
+        <CapsLock KeyRef="S" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="t" Label="t" Text="t">
+      <Modifiers>
+        <Shift KeyRef="T" />
+        <CapsLock KeyRef="T" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="u" Label="u" Text="u">
+      <Modifiers>
+        <Shift KeyRef="U" />
+        <CapsLock KeyRef="U" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="v" Label="v" Text="v">
+      <Modifiers>
+        <Shift KeyRef="V" />
+        <CapsLock KeyRef="V" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="w" Label="w" Text="w">
+      <Modifiers>
+        <Shift KeyRef="W" />
+        <CapsLock KeyRef="W" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="x" Label="x" Text="x">
+      <Modifiers>
+        <Shift KeyRef="X" />
+        <CapsLock KeyRef="X" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="y" Label="y" Text="y">
+      <Modifiers>
+        <Shift KeyRef="Y" />
+        <CapsLock KeyRef="Y" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="z" Label="z" Text="z">
+      <Modifiers>
+        <Shift KeyRef="Z" />
+        <CapsLock KeyRef="Z" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="A" Label="A" Text="A">
+      <Modifiers>
+        <Shift KeyRef="a" />
+        <CapsLock KeyRef="a" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="B" Label="B" Text="B">
+      <Modifiers>
+        <Shift KeyRef="b" />
+        <CapsLock KeyRef="b" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="C" Label="C" Text="C">
+      <Modifiers>
+        <Shift KeyRef="c" />
+        <CapsLock KeyRef="c" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="D" Label="D" Text="D">
+      <Modifiers>
+        <Shift KeyRef="d" />
+        <CapsLock KeyRef="d" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="E" Label="E" Text="E">
+      <Modifiers>
+        <Shift KeyRef="e" />
+        <CapsLock KeyRef="e" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="F" Label="F" Text="F">
+      <Modifiers>
+        <Shift KeyRef="f" />
+        <CapsLock KeyRef="f" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="G" Label="G" Text="G">
+      <Modifiers>
+        <Shift KeyRef="g" />
+        <CapsLock KeyRef="g" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="H" Label="H" Text="H">
+      <Modifiers>
+        <Shift KeyRef="h" />
+        <CapsLock KeyRef="h" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="I" Label="I" Text="I">
+      <Modifiers>
+        <Shift KeyRef="i" />
+        <CapsLock KeyRef="i" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="J" Label="J" Text="J">
+      <Modifiers>
+        <Shift KeyRef="j" />
+        <CapsLock KeyRef="j" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="K" Label="K" Text="K">
+      <Modifiers>
+        <Shift KeyRef="k" />
+        <CapsLock KeyRef="k" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="L" Label="L" Text="L">
+      <Modifiers>
+        <Shift KeyRef="l" />
+        <CapsLock KeyRef="l" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="M" Label="M" Text="M">
+      <Modifiers>
+        <Shift KeyRef="m" />
+        <CapsLock KeyRef="m" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="N" Label="N" Text="N">
+      <Modifiers>
+        <Shift KeyRef="n" />
+        <CapsLock KeyRef="n" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="O" Label="O" Text="O">
+      <Modifiers>
+        <Shift KeyRef="o" />
+        <CapsLock KeyRef="o" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="P" Label="P" Text="P">
+      <Modifiers>
+        <Shift KeyRef="p" />
+        <CapsLock KeyRef="p" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="Q" Label="Q" Text="Q">
+      <Modifiers>
+        <Shift KeyRef="q" />
+        <CapsLock KeyRef="q" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="R" Label="R" Text="R">
+      <Modifiers>
+        <Shift KeyRef="r" />
+        <CapsLock KeyRef="r" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="S" Label="S" Text="S">
+      <Modifiers>
+        <Shift KeyRef="s" />
+        <CapsLock KeyRef="s" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="T" Label="T" Text="T">
+      <Modifiers>
+        <Shift KeyRef="t" />
+        <CapsLock KeyRef="t" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="U" Label="U" Text="U">
+      <Modifiers>
+        <Shift KeyRef="u" />
+        <CapsLock KeyRef="u" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="V" Label="V" Text="V">
+      <Modifiers>
+        <Shift KeyRef="v" />
+        <CapsLock KeyRef="v" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="W" Label="W" Text="W">
+      <Modifiers>
+        <Shift KeyRef="w" />
+        <CapsLock KeyRef="w" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="X" Label="X" Text="X">
+      <Modifiers>
+        <Shift KeyRef="x" />
+        <CapsLock KeyRef="x" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="Y" Label="Y" Text="Y">
+      <Modifiers>
+        <Shift KeyRef="y" />
+        <CapsLock KeyRef="y" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="Z" Label="Z" Text="Z">
+      <Modifiers>
+        <Shift KeyRef="z" />
+        <CapsLock KeyRef="z" />
+      </Modifiers>
+    </TextKey>
+    <TextKey Id="Punctuation.Question" Label="?" Text="?" />
+    <TextKey Id="Punctuation.Period" Label="." Text="." />
+    <TextKey Id="Punctuation.Comma" Label="," Text="," />
+    <TextKey Id="Punctuation.ParenthesisOpen" Label="(" Text="(" />
+    <TextKey Id="Punctuation.ParenthesisClose" Label=")" Text=")" />
+    <TextKey Id="0" Label="0" Style="KeyStyle.Number" Text="0" />
+    <TextKey Id="1" Label="1" Style="KeyStyle.Number" Text="1" />
+    <TextKey Id="2" Label="2" Style="KeyStyle.Number" Text="2" />
+    <TextKey Id="3" Label="3" Style="KeyStyle.Number" Text="3" />
+    <TextKey Id="4" Label="4" Style="KeyStyle.Number" Text="4" />
+    <TextKey Id="5" Label="5" Style="KeyStyle.Number" Text="5" />
+    <TextKey Id="6" Label="6" Style="KeyStyle.Number" Text="6" />
+    <TextKey Id="7" Label="7" Style="KeyStyle.Number" Text="7" />
+    <TextKey Id="8" Label="8" Style="KeyStyle.Number" Text="8" />
+    <TextKey Id="9" Label="9" Style="KeyStyle.Number" Text="9" />
+    <TextKey Id="Mathematics.Plus" Label="+" Text="+" />
+    <TextKey Id="Mathematics.Minus" Label="-" Text="-" />
+    <TextKey Id="Punctuation.Asterisk" Label="*" Text="*" />
+    <TextKey Id="Mathematics.Equals" Label="=" Text="=" />
+    <TextKey Id="Punctuation.Percentage" Label="%" Text="%" />
+    <TextKey Id="Punctuation.Quotation" Label="&quot;" Text="&quot;" />
+    <TextKey Id="Punctuation.Colon" Label=":" Text=":" />
+    <TextKey Id="Punctuation.Semicolon" Label=";" Text=";" />
+    <TextKey Id="Punctuation.Exclamation" Label="!" Text="!" />
+    <TextKey Id="Currency.Dollar" Label="$" Text="$" />
+    <TextKey Id="Punctuation.Hash" Label="#" Text="#" />
+    <TextKey Id="Punctuation.At" Label="@" Text="@" />
+    <TextKey Id="Punctuation.Ampersand" Label="&amp;" Text="&amp;" />
+    <TextKey Id="Currency.Pound" Label="£" Text="£" />
+    <TextKey Id="Punctuation.BraceOpen" Label="{" Text="{" />
+    <TextKey Id="Punctuation.BraceClose" Label="}" Text="}" />
+    <TextKey Id="Punctuation.BracketOpen" Label="[" Text="[" />
+    <TextKey Id="Punctuation.BracketClose" Label="]" Text="]" />
+    <TextKey Id="Punctuation.GuillemetOpen" Label="&lt;" Text="&lt;" />
+    <TextKey Id="Punctuation.GuillemetClose" Label="&gt;" Text="&gt;" />
+    <TextKey Id="Punctuation.SlashForward" Label="/" Text="/" />
+    <TextKey Id="Punctuation.SlashBackward" Label="\" Text="\" />
+    <TextKey Id="Punctuation.Caret" Label="^" Text="^" />
+    <TextKey Id="Mathematics.Obelus" Label="÷" Text="÷" />
+    <TextKey Id="Mathematics.PlusMinus" Label="±" Text="±" />
+    <TextKey Id="Punctuation.Tilde" Label="~" Text="~" />
+    <TextKey Id="Mathematics.PI" Label="π" Text="π" />
+    <TextKey Id="Punctuation.Ellipses" Label="…" Text="…" />
+    <TextKey Id="Punctuation.Degree" Label="°" Text="°" />
+    <TextKey Id="Punctuation.Bullet" Label="•" Text="•" />
+    <TextKey Id="Punctuation.Symbol" Label="§" Text="§" />
+    <TextKey Id="Punctuation.Pipe" Label="|" Text="|" />
+    <TextKey Id="Currency.Euro" Label="€" Text="€" />
+    <TextKey Id="Currency.Yen" Label="¥" Text="¥" />
+    <TextKey Id="Punctuation.Apostrophe" Label="'" Text="'" />
+    <TextKey Id="Punctuation.Underscore" Label="_" Text="_" />
+  </TextKeys>
+  <CommandKeys>
+    <CommandKey Id="Navigate.More" Icon="KeyIcon.More" Style="KeyStyle.Navigation" Toggles="false" Command="Navigate.More" />
+    <CommandKey Id="Navigate.Numeric" Label="123.!" Style="KeyStyle.Navigation" Toggles="false" Command="Navigate.Numeric" />
+    <CommandKey Id="Navigate.Punctuation" Label="[(/" Icon="" Style="KeyStyle.Navigation" Toggles="false" Command="Navigate.Punctuation" />
+    <CommandKey Id="Function.Backspace" Icon="KeyIcon.Backspace" Style="KeyStyle.Function" Toggles="false" Command="Function.Backspace" />
+    <CommandKey Id="Function.Tab" Icon="KeyIcon.Tab" Style="KeyStyle.Function" Toggles="false" Command="Function.Tab" />
+    <CommandKey Id="Function.Enter" Label="Enter" Style="KeyStyle.Function" Toggles="false" Command="Function.Enter" />
+    <CommandKey Id="Function.Space" Label="" Icon="KeyIcon.Space" Style="KeyStyle.Function" Toggles="false" Command="Function.Space" />
+    <CommandKey Id="Modifier.Shift" Icon="KeyIcon.Shift" Style="KeyStyle.Modifier" Toggles="true" Command="Modifier.Shift" />
+    <CommandKey Id="Modifier.CapsLock" Label="Caps Lock" Style="KeyStyle.Modifier" Toggles="true" Command="Modifier.CapsLock" />
+    <CommandKey Id="Modifier.Ctrl" Label="Ctrl" Style="KeyStyle.Modifier" Toggles="true" Command="Modifier.Ctrl" />
+    <CommandKey Id="Custom.ClearWord" Icon="KeyIcon.ClearWord" Style="KeyStyle.Function" Toggles="false" Command="Custom.ClearWord" />
+    <CommandKey Id="Navigate.Alphabet" Label="ABC" Style="KeyStyle.Navigation" Toggles="false" Command="Navigate.Alphabet" />
+    <CommandKey Id="Function.Home" Label="Home" Style="KeyStyle.Function" Toggles="false" Command="Function.Home" />
+    <CommandKey Id="Function.End" Label="End" Style="KeyStyle.Function" Toggles="false" Command="Function.End" />
+    <CommandKey Id="Function.Delete" Label="Delete" Style="KeyStyle.Function" Toggles="false" Command="Function.Delete" />
+    <CommandKey Id="Navigate.Back" Icon="KeyIcon.Back" Style="KeyStyle.Navigation" Toggles="false" Command="Navigate.Back" />
+    <CommandKey Id="Custom.Search" Label="Search" Style="KeyStyle.Function" Toggles="false" Command="Custom.Search" />
+    <CommandKey Id="Function.PageUp" Label="PgUp" Style="KeyStyle.Paging" Toggles="false" Command="Function.PageUp" />
+    <CommandKey Id="Function.PageDown" Label="PgDn" Style="KeyStyle.Paging" Toggles="false" Command="Function.PageDown" />
+    <CommandKey Id="Function.ArrowUp" Icon="KeyIcon.Arrow.Up" Style="KeyStyle.Arrow" Toggles="false" Command="Function.ArrowUp" />
+    <CommandKey Id="Function.ArrowDown" Icon="KeyIcon.Arrow.Down" Style="KeyStyle.Arrow" Toggles="false" Command="Function.ArrowDown" />
+    <CommandKey Id="Function.ArrowLeft" Icon="KeyIcon.Arrow.Left" Style="KeyStyle.Arrow" Toggles="false" Command="Function.ArrowLeft" />
+    <CommandKey Id="Function.ArrowRight" Icon="KeyIcon.Arrow.Right" Style="KeyStyle.Arrow" Toggles="false" Command="Function.ArrowRight" />
+    <CommandKey Id="Navigate.Function Keys Numerical" Label="F1..F12" Style="KeyStyle.Navigation" Toggles="false" Command="Navigate.Function Keys Numerical" />
+    <CommandKey Id="Function.F1" Label="F1" Style="KeyStyle.Number" Toggles="false" Command="Function.F1" />
+    <CommandKey Id="Function.F2" Label="F2" Style="KeyStyle.Number" Toggles="false" Command="Function.F2" />
+    <CommandKey Id="Function.F3" Label="F3" Style="KeyStyle.Number" Toggles="false" Command="Function.F3" />
+    <CommandKey Id="Function.F4" Label="F4" Style="KeyStyle.Number" Toggles="false" Command="Function.F4" />
+    <CommandKey Id="Function.F5" Label="F5" Style="KeyStyle.Number" Toggles="false" Command="Function.F5" />
+    <CommandKey Id="Function.F6" Label="F6" Style="KeyStyle.Number" Toggles="false" Command="Function.F6" />
+    <CommandKey Id="Function.F7" Label="F7" Style="KeyStyle.Number" Toggles="false" Command="Function.F7" />
+    <CommandKey Id="Function.F8" Label="F8" Style="KeyStyle.Number" Toggles="false" Command="Function.F8" />
+    <CommandKey Id="Function.F9" Label="F9" Style="KeyStyle.Number" Toggles="false" Command="Function.F9" />
+    <CommandKey Id="Function.F10" Label="F10" Style="KeyStyle.Number" Toggles="false" Command="Function.F10" />
+    <CommandKey Id="Function.F11" Label="F11" Style="KeyStyle.Number" Toggles="false" Command="Function.F11" />
+    <CommandKey Id="Function.F12" Label="F12" Style="KeyStyle.Number" Toggles="false" Command="Function.F12" />
+    <CommandKey Id="Modifier.Alt" Label="Alt" Style="KeyStyle.Modifier" Toggles="true" Command="Modifier.Alt" />
+    <CommandKey Id="Navigate.Function Keys Punctuation" Label="F1..F12" Style="KeyStyle.Navigation" Toggles="false" Command="Navigate.Function Keys Punctuation" />
+    <CommandKey Id="Function.Escape" Label="Esc" Style="KeyStyle.Function" Toggles="false" Command="Function.Escape" />
+    <CommandKey Id="Modifier.Windows" Icon="KeyIcon.Windows" Style="KeyStyle.Modifier" Toggles="true" Command="Modifier.Windows" />
+    <CommandKey Id="Custom.ExpandHint" Label="TLA" Style="KeyStyle.Function" Toggles="false" Command="Custom.ExpandHint" />
+    <CommandKey Id="Custom.MouseLeftClick" Icon="KeyIcon.Mouse" Style="KeyStyle.Function" Toggles="false" Command="Custom.MouseLeftClick" />
+    <CommandKey Id="Custom.PositionWindow" Icon="KeyIcon.PositionWindow" Style="KeyStyle.Function" Toggles="false" Command="Custom.PositionWindow" />
+
+  </CommandKeys>
+  <PredictionKeys>
+    <PredictionKey Id="Predictions.First" Style="KeyStyle.Prediction" Order="1" />
+    <PredictionKey Id="Predictions.Second" Style="KeyStyle.Prediction" Order="2" />
+    <PredictionKey Id="Predictions.Third" Style="KeyStyle.Prediction" Order="3" />
+  </PredictionKeys>
+  <Views>
+
+    <View Id="Alphabet">
+
+      <CommandKeyRef KeyRef="Modifier.Windows" Column="0" />
+      <CommandKeyRef KeyRef="Custom.PositionWindow" Column="1" />
+      <CommandKeyRef KeyRef="Custom.ExpandHint" Column="2"/>
+      <PredictionKeyRef KeyRef="Predictions.First" Row="0" RowSpan="1" Column="3" ColumnSpan="2" />
+      <PredictionKeyRef KeyRef="Predictions.Second" Row="0" RowSpan="1" Column="5" ColumnSpan="2" />
+      <PredictionKeyRef KeyRef="Predictions.Third" Row="0" RowSpan="1" Column="7" ColumnSpan="2" />
+      <CommandKeyRef KeyRef="Custom.MouseLeftClick" Column="9" />
+      <CommandKeyRef KeyRef="Navigate.Punctuation" Row="0" RowSpan="1" Column="10" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Navigate.Numeric" Row="0" RowSpan="1" Column="11" ColumnSpan="1" />
+
+      <CommandKeyRef KeyRef="Custom.ClearWord" Row="1" RowSpan="1" Column="0" ColumnSpan="1" />
+      <TextKeyRef KeyRef="q" Row="1" RowSpan="1" Column="1" ColumnSpan="1" />
+      <TextKeyRef KeyRef="w" Row="1" RowSpan="1" Column="2" ColumnSpan="1" />
+      <TextKeyRef KeyRef="e" Row="1" RowSpan="1" Column="3" ColumnSpan="1" />
+      <TextKeyRef KeyRef="r" Row="1" RowSpan="1" Column="4" ColumnSpan="1" />
+      <TextKeyRef KeyRef="t" Row="1" RowSpan="1" Column="5" ColumnSpan="1" />
+      <TextKeyRef KeyRef="y" Row="1" RowSpan="1" Column="6" ColumnSpan="1" />
+      <TextKeyRef KeyRef="u" Row="1" RowSpan="1" Column="7" ColumnSpan="1" />
+      <TextKeyRef KeyRef="i" Row="1" RowSpan="1" Column="8" ColumnSpan="1" />
+      <TextKeyRef KeyRef="o" Row="1" RowSpan="1" Column="9" ColumnSpan="1" />
+      <TextKeyRef KeyRef="p" Row="1" RowSpan="1" Column="10" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Backspace" Row="1" RowSpan="1" Column="11" ColumnSpan="1" />
+
+      <CommandKeyRef KeyRef="Modifier.Ctrl" Row="2" RowSpan="1" Column="0" ColumnSpan="1" />
+      <TextKeyRef KeyRef="a" Row="2" RowSpan="1" Column="1" ColumnSpan="1" />
+      <TextKeyRef KeyRef="s" Row="2" RowSpan="1" Column="2" ColumnSpan="1" />
+      <TextKeyRef KeyRef="d" Row="2" RowSpan="1" Column="3" ColumnSpan="1" />
+      <TextKeyRef KeyRef="f" Row="2" RowSpan="1" Column="4" ColumnSpan="1" />
+      <TextKeyRef KeyRef="g" Row="2" RowSpan="1" Column="5" ColumnSpan="1" />
+      <TextKeyRef KeyRef="h" Row="2" RowSpan="1" Column="6" ColumnSpan="1" />
+      <TextKeyRef KeyRef="j" Row="2" RowSpan="1" Column="7" ColumnSpan="1" />
+      <TextKeyRef KeyRef="k" Row="2" RowSpan="1" Column="8" ColumnSpan="1" />
+      <TextKeyRef KeyRef="l" Row="2" RowSpan="1" Column="9" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Exclamation" Row="2" RowSpan="1" Column="10" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Enter" Row="2" RowSpan="1" Column="11" ColumnSpan="1" />
+
+      <CommandKeyRef KeyRef="Modifier.Shift" Row="3" RowSpan="1" Column="0" ColumnSpan="1" />
+      <TextKeyRef KeyRef="z" Row="3" RowSpan="1" Column="1" ColumnSpan="1" />
+      <TextKeyRef KeyRef="x" Row="3" RowSpan="1" Column="2" ColumnSpan="1" />
+      <TextKeyRef KeyRef="c" Row="3" RowSpan="1" Column="3" ColumnSpan="1" />
+      <TextKeyRef KeyRef="v" Row="3" RowSpan="1" Column="4" ColumnSpan="1" />
+      <TextKeyRef KeyRef="b" Row="3" RowSpan="1" Column="5" ColumnSpan="1" />
+      <TextKeyRef KeyRef="n" Row="3" RowSpan="1" Column="6" ColumnSpan="1" />
+      <TextKeyRef KeyRef="m" Row="3" RowSpan="1" Column="7" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Comma" Row="3" RowSpan="1" Column="8" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Period" Row="3" RowSpan="1" Column="9" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Question" Row="3" RowSpan="1" Column="10" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Space" Row="3" RowSpan="1" Column="11" ColumnSpan="1" />
+
+      <Groups />
+    </View>
+    <View Id="Numeric">
+      <TextKeyRef KeyRef="0" Row="1" RowSpan="1" Column="10" ColumnSpan="1" />
+      <TextKeyRef KeyRef="9" Row="1" RowSpan="1" Column="9" ColumnSpan="1" />
+      <TextKeyRef KeyRef="8" Row="1" RowSpan="1" Column="8" ColumnSpan="1" />
+      <TextKeyRef KeyRef="7" Row="1" RowSpan="1" Column="7" ColumnSpan="1" />
+      <TextKeyRef KeyRef="6" Row="1" RowSpan="1" Column="6" ColumnSpan="1" />
+      <TextKeyRef KeyRef="5" Row="1" RowSpan="1" Column="5" ColumnSpan="1" />
+      <TextKeyRef KeyRef="4" Row="1" RowSpan="1" Column="4" ColumnSpan="1" />
+      <TextKeyRef KeyRef="3" Row="1" RowSpan="1" Column="3" ColumnSpan="1" />
+      <TextKeyRef KeyRef="2" Row="1" RowSpan="1" Column="2" ColumnSpan="1" />
+      <TextKeyRef KeyRef="1" Row="1" RowSpan="1" Column="1" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Mathematics.Plus" Row="2" RowSpan="1" Column="1" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Mathematics.Minus" Row="2" RowSpan="1" Column="2" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Asterisk" Row="2" RowSpan="1" Column="3" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Mathematics.Equals" Row="2" RowSpan="1" Column="5" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Percentage" Row="2" RowSpan="1" Column="6" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Quotation" Row="2" RowSpan="1" Column="7" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Colon" Row="2" RowSpan="1" Column="8" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Semicolon" Row="2" RowSpan="1" Column="9" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Comma" Row="2" RowSpan="1" Column="11" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Exclamation" Row="1" RowSpan="1" Column="11" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Currency.Dollar" Row="3" RowSpan="1" Column="1" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Hash" Row="3" RowSpan="1" Column="7" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.At" Row="3" RowSpan="1" Column="8" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Ampersand" Row="3" RowSpan="1" Column="9" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Currency.Pound" Row="3" RowSpan="1" Column="2" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Mathematics.Obelus" Row="2" RowSpan="1" Column="4" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Currency.Euro" Row="3" RowSpan="1" Column="3" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Currency.Yen" Row="3" RowSpan="1" Column="4" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Period" Row="2" RowSpan="1" Column="10" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Apostrophe" Row="3" RowSpan="1" Column="10" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Custom.ClearWord" Row="0" RowSpan="1" Column="2" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Backspace" Row="0" RowSpan="1" Column="9" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Space" Row="3" RowSpan="1" Column="5" ColumnSpan="2" />
+      <CommandKeyRef KeyRef="Modifier.Shift" Row="2" RowSpan="1" Column="0" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Navigate.Punctuation" Row="0" RowSpan="1" Column="10" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Navigate.Alphabet" Row="0" RowSpan="1" Column="11" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Tab" Row="0" RowSpan="1" Column="0" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Modifier.CapsLock" Row="1" RowSpan="1" Column="0" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Navigate.Function Keys Numerical" Row="0" RowSpan="1" Column="1" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Enter" Row="3" RowSpan="1" Column="11" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Escape" Row="3" RowSpan="1" Column="0" ColumnSpan="1" />
+      <PredictionKeyRef KeyRef="Predictions.First" Row="0" RowSpan="1" Column="3" ColumnSpan="2" />
+      <PredictionKeyRef KeyRef="Predictions.Second" Row="0" RowSpan="1" Column="5" ColumnSpan="2" />
+      <PredictionKeyRef KeyRef="Predictions.Third" Row="0" RowSpan="1" Column="7" ColumnSpan="2" />
+      <Groups />
+    </View>
+    <View Id="Punctuation">
+      <TextKeyRef KeyRef="Punctuation.ParenthesisOpen" Row="1" RowSpan="1" Column="1" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.ParenthesisClose" Row="1" RowSpan="1" Column="2" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.BraceOpen" Row="1" RowSpan="1" Column="3" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.BraceClose" Row="1" RowSpan="1" Column="4" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.SlashForward" Row="1" RowSpan="1" Column="5" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.SlashBackward" Row="1" RowSpan="1" Column="6" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.BracketOpen" Row="1" RowSpan="1" Column="7" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.BracketClose" Row="1" RowSpan="1" Column="8" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.GuillemetOpen" Row="1" RowSpan="1" Column="9" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.GuillemetClose" Row="1" RowSpan="1" Column="10" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Caret" Row="1" RowSpan="1" Column="11" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Mathematics.PlusMinus" Row="2" RowSpan="1" Column="1" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Tilde" Row="2" RowSpan="1" Column="2" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Mathematics.PI" Row="2" RowSpan="1" Column="3" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Ellipses" Row="2" RowSpan="1" Column="4" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Degree" Row="2" RowSpan="1" Column="5" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Bullet" Row="2" RowSpan="1" Column="6" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Pipe" Row="2" RowSpan="1" Column="11" ColumnSpan="1" />
+      <TextKeyRef KeyRef="Punctuation.Underscore" Row="2" RowSpan="1" Column="10" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Modifier.Shift" Row="2" RowSpan="1" Column="0" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Space" Row="3" RowSpan="1" Column="5" ColumnSpan="2" />
+      <CommandKeyRef KeyRef="Function.Home" Row="3" RowSpan="1" Column="1" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.End" Row="3" RowSpan="1" Column="2" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Delete" Row="3" RowSpan="1" Column="4" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Custom.ClearWord" Row="0" RowSpan="1" Column="2" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Enter" Row="3" RowSpan="1" Column="10" ColumnSpan="2" />
+      <CommandKeyRef KeyRef="Custom.Search" Row="3" RowSpan="1" Column="3" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Backspace" Row="0" RowSpan="1" Column="9" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Navigate.Numeric" Row="0" RowSpan="1" Column="10" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Navigate.Alphabet" Row="0" RowSpan="1" Column="11" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.ArrowUp" Row="2" RowSpan="1" Column="8" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.ArrowDown" Row="3" RowSpan="1" Column="8" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.ArrowLeft" Row="3" RowSpan="1" Column="7" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.ArrowRight" Row="3" RowSpan="1" Column="9" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.PageUp" Row="2" RowSpan="1" Column="7" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.PageDown" Row="2" RowSpan="1" Column="9" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Tab" Row="0" RowSpan="1" Column="0" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Modifier.CapsLock" Row="1" RowSpan="1" Column="0" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Navigate.Function Keys Punctuation" Row="0" RowSpan="1" Column="1" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Escape" Row="3" RowSpan="1" Column="0" ColumnSpan="1" />
+      <PredictionKeyRef KeyRef="Predictions.First" Row="0" RowSpan="1" Column="3" ColumnSpan="2" />
+      <PredictionKeyRef KeyRef="Predictions.Second" Row="0" RowSpan="1" Column="5" ColumnSpan="2" />
+      <PredictionKeyRef KeyRef="Predictions.Third" Row="0" RowSpan="1" Column="7" ColumnSpan="2" />
+      <Groups />
+    </View>
+    <View Id="Function Keys Numerical">
+      <CommandKeyRef KeyRef="Navigate.Back" Row="0" RowSpan="1" Column="1" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Tab" Row="0" RowSpan="1" Column="0" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Modifier.CapsLock" Row="1" RowSpan="1" Column="0" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Modifier.Shift" Row="2" RowSpan="1" Column="0" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Custom.ClearWord" Row="0" RowSpan="1" Column="2" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Backspace" Row="0" RowSpan="1" Column="9" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Navigate.Punctuation" Row="0" RowSpan="1" Column="10" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Navigate.Alphabet" Row="0" RowSpan="1" Column="11" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F1" Row="1" RowSpan="1" Column="1" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F2" Row="1" RowSpan="1" Column="2" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F3" Row="1" RowSpan="1" Column="3" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F4" Row="1" RowSpan="1" Column="4" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F5" Row="1" RowSpan="1" Column="5" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F6" Row="1" RowSpan="1" Column="6" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F7" Row="1" RowSpan="1" Column="7" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F8" Row="1" RowSpan="1" Column="8" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F9" Row="1" RowSpan="1" Column="9" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F10" Row="1" RowSpan="1" Column="10" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F11" Row="1" RowSpan="1" Column="11" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F12" Row="2" RowSpan="1" Column="11" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Space" Row="3" RowSpan="1" Column="5" ColumnSpan="2" />
+      <CommandKeyRef KeyRef="Function.Enter" Row="3" RowSpan="1" Column="10" ColumnSpan="2" />
+      <CommandKeyRef KeyRef="Modifier.Alt" Row="3" RowSpan="1" Column="1" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Escape" Row="3" RowSpan="1" Column="0" ColumnSpan="1" />
+      <PredictionKeyRef KeyRef="Predictions.First" Row="0" RowSpan="1" Column="3" ColumnSpan="2" />
+      <PredictionKeyRef KeyRef="Predictions.Second" Row="0" RowSpan="1" Column="5" ColumnSpan="2" />
+      <PredictionKeyRef KeyRef="Predictions.Third" Row="0" RowSpan="1" Column="7" ColumnSpan="2" />
+      <Groups />
+    </View>
+    <View Id="Function Keys Punctuation">
+      <CommandKeyRef KeyRef="Function.Tab" Row="0" RowSpan="1" Column="0" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Modifier.CapsLock" Row="1" RowSpan="1" Column="0" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Modifier.Shift" Row="2" RowSpan="1" Column="0" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Navigate.Back" Row="0" RowSpan="1" Column="1" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Custom.ClearWord" Row="0" RowSpan="1" Column="2" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Backspace" Row="0" RowSpan="1" Column="9" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Navigate.Numeric" Row="0" RowSpan="1" Column="10" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Navigate.Alphabet" Row="0" RowSpan="1" Column="11" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F1" Row="1" RowSpan="1" Column="1" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F2" Row="1" RowSpan="1" Column="2" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F3" Row="1" RowSpan="1" Column="3" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F4" Row="1" RowSpan="1" Column="4" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F5" Row="1" RowSpan="1" Column="5" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F6" Row="1" RowSpan="1" Column="6" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F7" Row="1" RowSpan="1" Column="7" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F8" Row="1" RowSpan="1" Column="8" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F9" Row="1" RowSpan="1" Column="9" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F10" Row="1" RowSpan="1" Column="10" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F11" Row="1" RowSpan="1" Column="11" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.F12" Row="2" RowSpan="1" Column="11" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Enter" Row="3" RowSpan="1" Column="10" ColumnSpan="2" />
+      <CommandKeyRef KeyRef="Function.Space" Row="3" RowSpan="1" Column="5" ColumnSpan="2" />
+      <CommandKeyRef KeyRef="Modifier.Alt" Row="3" RowSpan="1" Column="1" ColumnSpan="1" />
+      <CommandKeyRef KeyRef="Function.Escape" Row="3" RowSpan="1" Column="0" ColumnSpan="1" />
+      <PredictionKeyRef KeyRef="Predictions.First" Row="0" RowSpan="1" Column="3" ColumnSpan="2" />
+      <PredictionKeyRef KeyRef="Predictions.Second" Row="0" RowSpan="1" Column="5" ColumnSpan="2" />
+      <PredictionKeyRef KeyRef="Predictions.Third" Row="0" RowSpan="1" Column="7" ColumnSpan="2" />
+      <Groups />
+    </View>
+  </Views>
+</KeyboardLayout>

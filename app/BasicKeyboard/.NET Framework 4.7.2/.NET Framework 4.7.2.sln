@@ -1,0 +1,68 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls", "Controls\Controls.csproj", "{AD61A8C5-F67A-48B8-AEDF-85C683219E66}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Layout", "..\Standard 2.0\Layout\Layout.csproj", "{925C7373-17E5-4627-B4EE-5981D10BB55C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PInvoke", "..\Standard 2.0\PInvoke\PInvoke.csproj", "{D6EE8ACA-48D5-4C8A-849B-432AA0191265}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keyboard", "Keyboard\Keyboard.csproj", "{70710686-1206-42FD-BB06-FF2A2FCF909F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GazeInteraction", "GazeInteraction", "{1483336E-FEFF-4D10-8F8E-D5C3F7805779}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameworkLib", "..\Microsoft.Research.GazeInteraction\FrameworkLib\FrameworkLib.csproj", "{B0C5978F-35FC-4C5F-8355-E28A952D4047}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StandardLib", "..\Microsoft.Research.GazeInteraction\StandardLib\StandardLib.csproj", "{ADE1CC11-DB7C-48BC-9C33-007744739457}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameworkLib.Devices", "..\Microsoft.Research.GazeInteraction\FrameworkLib.Devices\FrameworkLib.Devices.csproj", "{9DCF1C1D-A140-4EC0-AFE8-D46FFE679C32}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AD61A8C5-F67A-48B8-AEDF-85C683219E66}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AD61A8C5-F67A-48B8-AEDF-85C683219E66}.Debug|x64.Build.0 = Debug|Any CPU
+		{AD61A8C5-F67A-48B8-AEDF-85C683219E66}.Release|x64.ActiveCfg = Release|Any CPU
+		{AD61A8C5-F67A-48B8-AEDF-85C683219E66}.Release|x64.Build.0 = Release|Any CPU
+		{925C7373-17E5-4627-B4EE-5981D10BB55C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{925C7373-17E5-4627-B4EE-5981D10BB55C}.Debug|x64.Build.0 = Debug|Any CPU
+		{925C7373-17E5-4627-B4EE-5981D10BB55C}.Release|x64.ActiveCfg = Release|Any CPU
+		{925C7373-17E5-4627-B4EE-5981D10BB55C}.Release|x64.Build.0 = Release|Any CPU
+		{D6EE8ACA-48D5-4C8A-849B-432AA0191265}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D6EE8ACA-48D5-4C8A-849B-432AA0191265}.Debug|x64.Build.0 = Debug|Any CPU
+		{D6EE8ACA-48D5-4C8A-849B-432AA0191265}.Release|x64.ActiveCfg = Release|Any CPU
+		{D6EE8ACA-48D5-4C8A-849B-432AA0191265}.Release|x64.Build.0 = Release|Any CPU
+		{70710686-1206-42FD-BB06-FF2A2FCF909F}.Debug|x64.ActiveCfg = Debug|x64
+		{70710686-1206-42FD-BB06-FF2A2FCF909F}.Debug|x64.Build.0 = Debug|x64
+		{70710686-1206-42FD-BB06-FF2A2FCF909F}.Release|x64.ActiveCfg = Release|x64
+		{70710686-1206-42FD-BB06-FF2A2FCF909F}.Release|x64.Build.0 = Release|x64
+		{B0C5978F-35FC-4C5F-8355-E28A952D4047}.Debug|x64.ActiveCfg = Debug|x64
+		{B0C5978F-35FC-4C5F-8355-E28A952D4047}.Debug|x64.Build.0 = Debug|x64
+		{B0C5978F-35FC-4C5F-8355-E28A952D4047}.Release|x64.ActiveCfg = Release|x64
+		{B0C5978F-35FC-4C5F-8355-E28A952D4047}.Release|x64.Build.0 = Release|x64
+		{ADE1CC11-DB7C-48BC-9C33-007744739457}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ADE1CC11-DB7C-48BC-9C33-007744739457}.Debug|x64.Build.0 = Debug|Any CPU
+		{ADE1CC11-DB7C-48BC-9C33-007744739457}.Release|x64.ActiveCfg = Release|Any CPU
+		{ADE1CC11-DB7C-48BC-9C33-007744739457}.Release|x64.Build.0 = Release|Any CPU
+		{9DCF1C1D-A140-4EC0-AFE8-D46FFE679C32}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9DCF1C1D-A140-4EC0-AFE8-D46FFE679C32}.Debug|x64.Build.0 = Debug|Any CPU
+		{9DCF1C1D-A140-4EC0-AFE8-D46FFE679C32}.Release|x64.ActiveCfg = Release|Any CPU
+		{9DCF1C1D-A140-4EC0-AFE8-D46FFE679C32}.Release|x64.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B0C5978F-35FC-4C5F-8355-E28A952D4047} = {1483336E-FEFF-4D10-8F8E-D5C3F7805779}
+		{ADE1CC11-DB7C-48BC-9C33-007744739457} = {1483336E-FEFF-4D10-8F8E-D5C3F7805779}
+		{9DCF1C1D-A140-4EC0-AFE8-D46FFE679C32} = {1483336E-FEFF-4D10-8F8E-D5C3F7805779}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BF7D1DA8-C10D-47AD-A084-05BBE1E17207}
+	EndGlobalSection
+EndGlobal

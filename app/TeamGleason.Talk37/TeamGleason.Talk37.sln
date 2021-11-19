@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamGleason.Talk37.SpeechSupport", "TeamGleason.Talk37.SpeechSupport\TeamGleason.Talk37.SpeechSupport.csproj", "{3145C0B5-D9CD-4EBC-8C4F-6FA00CC6215F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamGleason.Talk37.SpeechSupport.Harness", "TeamGleason.Talk37.SpeechSupport.Harness\TeamGleason.Talk37.SpeechSupport.Harness.csproj", "{9447E6F8-1E33-4197-87E8-162505CF2CB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamGleason.Talk37.Keyboard", "TeamGleason.Talk37.Keyboard\TeamGleason.Talk37.Keyboard.csproj", "{A026D593-31C4-44D0-8FC1-7FA69FB8F35C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamGleason.Talk37.ComSupport", "TeamGleason.Talk37.ComSupport\TeamGleason.Talk37.ComSupport.csproj", "{230D028F-62E2-4D6D-B5D8-250507F3C7FC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3145C0B5-D9CD-4EBC-8C4F-6FA00CC6215F}.Debug|x64.ActiveCfg = Debug|x64
+		{3145C0B5-D9CD-4EBC-8C4F-6FA00CC6215F}.Debug|x64.Build.0 = Debug|x64
+		{3145C0B5-D9CD-4EBC-8C4F-6FA00CC6215F}.Release|x64.ActiveCfg = Release|x64
+		{3145C0B5-D9CD-4EBC-8C4F-6FA00CC6215F}.Release|x64.Build.0 = Release|x64
+		{9447E6F8-1E33-4197-87E8-162505CF2CB7}.Debug|x64.ActiveCfg = Debug|x64
+		{9447E6F8-1E33-4197-87E8-162505CF2CB7}.Debug|x64.Build.0 = Debug|x64
+		{9447E6F8-1E33-4197-87E8-162505CF2CB7}.Debug|x64.Deploy.0 = Debug|x64
+		{9447E6F8-1E33-4197-87E8-162505CF2CB7}.Release|x64.ActiveCfg = Release|x64
+		{9447E6F8-1E33-4197-87E8-162505CF2CB7}.Release|x64.Build.0 = Release|x64
+		{9447E6F8-1E33-4197-87E8-162505CF2CB7}.Release|x64.Deploy.0 = Release|x64
+		{A026D593-31C4-44D0-8FC1-7FA69FB8F35C}.Debug|x64.ActiveCfg = Debug|x64
+		{A026D593-31C4-44D0-8FC1-7FA69FB8F35C}.Debug|x64.Build.0 = Debug|x64
+		{A026D593-31C4-44D0-8FC1-7FA69FB8F35C}.Debug|x64.Deploy.0 = Debug|x64
+		{A026D593-31C4-44D0-8FC1-7FA69FB8F35C}.Release|x64.ActiveCfg = Release|x64
+		{A026D593-31C4-44D0-8FC1-7FA69FB8F35C}.Release|x64.Build.0 = Release|x64
+		{A026D593-31C4-44D0-8FC1-7FA69FB8F35C}.Release|x64.Deploy.0 = Release|x64
+		{230D028F-62E2-4D6D-B5D8-250507F3C7FC}.Debug|x64.ActiveCfg = Debug|x64
+		{230D028F-62E2-4D6D-B5D8-250507F3C7FC}.Debug|x64.Build.0 = Debug|x64
+		{230D028F-62E2-4D6D-B5D8-250507F3C7FC}.Release|x64.ActiveCfg = Release|x64
+		{230D028F-62E2-4D6D-B5D8-250507F3C7FC}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

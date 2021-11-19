@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  IgnorableNamespaces="uap mp">
+
+  <Identity
+    Name="54d27569-fe1e-42fc-ae81-7dd837fe0038"
+    Publisher="CN=angopala"
+    Version="1.0.0.0" />
+
+  <mp:PhoneIdentity PhoneProductId="54d27569-fe1e-42fc-ae81-7dd837fe0038" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+
+  <Properties>
+    <DisplayName>TeamGleason.Talk37.Keyboard</DisplayName>
+    <PublisherDisplayName>angopala</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="x-generate"/>
+  </Resources>
+
+  <Applications>
+    <Application Id="App"
+      Executable="$targetnametoken$.exe"
+      EntryPoint="TeamGleason.Talk37.Keyboard.App">
+      <uap:VisualElements
+        DisplayName="TeamGleason.Talk37.Keyboard"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png"
+        Description="TeamGleason.Talk37.Keyboard"
+        BackgroundColor="transparent">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
+        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <Capability Name="internetClient" />
+    
+    <DeviceCapability Name="humaninterfacedevice">
+      <Device Id="any">
+        <Function Type="usage:0012 0001" />
+      </Device>
+    </DeviceCapability>
+    
+    <DeviceCapability Name="serialcommunication">
+        <Device Id="any">
+            <Function Type="name:serialPort" />
+        </Device>
+    </DeviceCapability>
+  </Capabilities>
+</Package>

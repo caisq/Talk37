@@ -1,0 +1,9 @@
+﻿<Application x:Class="TeamGleason.SpeakFaster.BasicKeyboard.Keyboard.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:TeamGleason.SpeakFaster.BasicKeyboard.Keyboard"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+         
+    </Application.Resources>
+</Application>

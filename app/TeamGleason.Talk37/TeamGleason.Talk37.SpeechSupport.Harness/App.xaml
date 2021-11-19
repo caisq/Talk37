@@ -1,0 +1,8 @@
+﻿<Application
+    x:Class="TeamGleason.Talk37.SpeechSupport.Harness.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TeamGleason.Talk37.SpeechSupport.Harness"
+    RequestedTheme="Light">
+
+</Application>
