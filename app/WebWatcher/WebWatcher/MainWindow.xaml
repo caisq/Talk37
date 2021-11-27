@@ -9,7 +9,8 @@
         xmlns:local="clr-namespace:WebWatcher"
         mc:Ignorable="d"
         gaze:GazeInput.Interaction="Enabled"
-        Title="MainWindow" 
+        Title=""
+        WindowStyle="None"
         Height="450" 
         Width="1350"
         Loaded="Window_Loaded">
