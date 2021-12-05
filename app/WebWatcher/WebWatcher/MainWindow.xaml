@@ -11,6 +11,9 @@
         gaze:GazeInput.Interaction="Enabled"
         Title=""
         WindowStyle="None"
+        WindowStartupLocation="Manual"
+        Left="0"
+        Top="0"
         Height="450" 
         Width="1350"
         Loaded="Window_Loaded">

@@ -1,13 +1,15 @@
 ﻿using CefSharp;
-using Microsoft.Toolkit.Uwp.Input.GazeInteraction;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+
+using static WebWatcher.Win32.Interop;
 
 namespace WebWatcher
 {
@@ -45,20 +47,92 @@ namespace WebWatcher
     /// </summary>
     public partial class MainWindow : Window
     {
-        ArrayList gazeButtons = new ArrayList();
-
+        private static string FOCUS_APP_NAME = "balabolka";
+        private static bool focusAppRunning;
+        private static bool focusAppFocused;
         private readonly Dictionary<string, HashSet<string>> componentButtons =
             new Dictionary<string, HashSet<string>>();
-
+        private readonly KeyLogger keyLogger;
+        private readonly System.Threading.Timer timer;
+        private CefSharp.DevTools.DevToolsClient devToolsClient;
+        
         public MainWindow()
         {
             InitializeComponent();
+            keyLogger = new KeyLogger(KeyboardHookHandler);
+            timer = new System.Threading.Timer(TimerTick);
+            timer.Change(0, 2 * 1000);
         }
 
-        private static string ReadFileContents(string textFile)
+        private void KeyboardHookHandler(int vkCode)
         {
-            StreamReader file = new StreamReader(textFile);
-            return file.ReadToEnd();
+            if (!focusAppRunning || !focusAppFocused)
+            {
+                return;
+            }
+            Debug.WriteLine($"Key in focus app: {vkCode}, {(char) vkCode}");  // DEBUG
+            if (devToolsClient == null)
+            {
+                devToolsClient = TheBrowser.GetDevToolsClient();
+            }
+            devToolsClient.Input.DispatchKeyEventAsync(
+                type: CefSharp.DevTools.Input.DispatchKeyEventType.KeyDown,
+                key: ((char) vkCode).ToString().ToLower());
+            // TODO(cais): Make comma, period, and other punctuation work?
+        }
+
+        public async void TimerTick(object state)
+        {            
+            focusAppRunning = IsProcessRunning(FOCUS_APP_NAME);
+            focusAppFocused = IsProcessFocused(FOCUS_APP_NAME);
+
+            // This code works for showing and hiding window.
+            //if (!(focusAppRunning && focusAppFocused))
+            //{
+            //    Application.Current.Dispatcher.Invoke(Hide);
+            //} else
+            //{
+            //    Application.Current.Dispatcher.Invoke(Show);
+            //}
+            // This code works for resizing window.
+            //if (focusAppRunning && focusAppFocused)
+            //{
+            //    Application.Current.Dispatcher.Invoke(() =>
+            //    {
+            //        Debug.WriteLine($"Window height = {this.Height}");
+            //        this.Height += 10;
+            //        // TODO(cais): Confirm that eye gaze click works after resizing.
+            //    });
+            //}
+        }
+
+        private static bool IsProcessRunning(string processName)
+        {
+            string lowerProcessName = processName.ToLower();
+            foreach (Process process in Process.GetProcesses())
+            {
+                if (process.ProcessName.ToLower().Contains(lowerProcessName))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool IsProcessFocused(string processName)
+        {
+            const int nChars = 256; // MAX_PATH
+            StringBuilder windowText = new StringBuilder(nChars);
+            IntPtr handle = GetForegroundWindow();
+            string lowerProcessName = processName.ToLower();
+            if (GetWindowText(handle, windowText, nChars) > 0)
+            {
+                if (windowText.ToString().ToLower().Contains(lowerProcessName))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -83,7 +157,7 @@ namespace WebWatcher
 
         private static string GetBoxString(float[] box)
         {
-            return String.Format(
+            return string.Format(
                 "{0:0.000},{1:0.000},{2:0.000},{3:0.000}",
                 box[0], box[1], box[2], box[3]);
         }

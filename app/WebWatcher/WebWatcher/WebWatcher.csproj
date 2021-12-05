@@ -119,6 +119,8 @@
     </Compile>
     <Compile Include="BrowserSubTargetItem.cs" />
     <Compile Include="BrowserTargetItem.cs" />
+    <Compile Include="Interop.cs" />
+    <Compile Include="KeyLogger.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
