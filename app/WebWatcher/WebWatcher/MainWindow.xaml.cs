@@ -1,6 +1,5 @@
 ﻿using CefSharp;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -8,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 using static WebWatcher.Win32.Interop;
 
@@ -70,9 +70,11 @@ namespace WebWatcher
             {
                 return;
             }
+            // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
             Debug.WriteLine($"Key in focus app: {vkCode}, {(char) vkCode}");  // DEBUG
             if (devToolsClient == null)
             {
+                // TODO(cais): This fails occasionaly due to a race condition. Fix it.
                 devToolsClient = TheBrowser.GetDevToolsClient();
             }
             devToolsClient.Input.DispatchKeyEventAsync(
@@ -104,6 +106,20 @@ namespace WebWatcher
             //        // TODO(cais): Confirm that eye gaze click works after resizing.
             //    });
             //}
+            // This code works for programmatic injection of keys.
+            // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
+            const uint KEYEVENTF_EXTENDEDKEY = 0x0001;
+            if (focusAppRunning && focusAppFocused)
+            {
+                //var key = Key.V;
+                //var target = Keyboard.FocusedElement;
+                //var routedEvent = Keyboard.KeyDownEvent;
+                //target.RaiseEvent(new KeyboardEventArgs();
+                // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
+                keybd_event(0x41, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+                keybd_event(0x0D, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+            }
+
         }
 
         private static bool IsProcessRunning(string processName)
