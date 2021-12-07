@@ -72,14 +72,15 @@ namespace WebWatcher
             }
             // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
             Debug.WriteLine($"Key in focus app: {vkCode}, {(char) vkCode}");  // DEBUG
-            if (devToolsClient == null)
-            {
-                // TODO(cais): This fails occasionaly due to a race condition. Fix it.
-                devToolsClient = TheBrowser.GetDevToolsClient();
-            }
-            devToolsClient.Input.DispatchKeyEventAsync(
-                type: CefSharp.DevTools.Input.DispatchKeyEventType.KeyDown,
-                key: ((char) vkCode).ToString().ToLower());
+            TheBrowser.ExecuteScriptAsync($"window.externalKeypressCallback({vkCode})");
+            //if (devToolsClient == null)
+            //{
+            //    // TODO(cais): This fails occasionaly due to a race condition. Fix it.
+            //    devToolsClient = TheBrowser.GetDevToolsClient();
+            //}
+            //devToolsClient.Input.DispatchKeyEventAsync(
+            //    type: CefSharp.DevTools.Input.DispatchKeyEventType.KeyDown,
+            //    key: ((char) vkCode).ToString().ToLower());
             // TODO(cais): Make comma, period, and other punctuation work?
         }
 
@@ -108,18 +109,13 @@ namespace WebWatcher
             //}
             // This code works for programmatic injection of keys.
             // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
-            const uint KEYEVENTF_EXTENDEDKEY = 0x0001;
-            if (focusAppRunning && focusAppFocused)
-            {
-                //var key = Key.V;
-                //var target = Keyboard.FocusedElement;
-                //var routedEvent = Keyboard.KeyDownEvent;
-                //target.RaiseEvent(new KeyboardEventArgs();
-                // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
-                keybd_event(0x41, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-                keybd_event(0x0D, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-            }
-
+            //const uint KEYEVENTF_EXTENDEDKEY = 0x0001;
+            //if (focusAppRunning && focusAppFocused)
+            //{
+            //    // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
+            //    keybd_event(0x41, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+            //    keybd_event(0x0D, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+            //}
         }
 
         private static bool IsProcessRunning(string processName)
