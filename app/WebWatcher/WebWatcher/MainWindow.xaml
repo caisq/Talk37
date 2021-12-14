@@ -16,6 +16,7 @@
         Top="0"
         Height="450" 
         Width="1350"
+        Topmost="False"
         Loaded="Window_Loaded">
     <Grid>
         <cef:ChromiumWebBrowser x:Name="TheBrowser" />

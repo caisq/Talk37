@@ -17,12 +17,11 @@ namespace WebWatcher
     {
         //private readonly Func<int, int> onDomChangeCallback;
         private readonly Func<string, float[][], Task<int>> updateButtonBoxesCallback;
-        public BoundListener(Func<string, float[][], Task<int>> updateButtonBoxesCallback) {
+        private readonly Func<int[], Task<int>> keyInjectionsCallback;
+        public BoundListener(Func<string, float[][], Task<int>> updateButtonBoxesCallback,
+                             Func<int[], Task<int>> keyInjectionsCallback) {
             this.updateButtonBoxesCallback = updateButtonBoxesCallback;
-        }
-
-        public void onDomChange()
-        {
+            this.keyInjectionsCallback = keyInjectionsCallback;
         }
 
         public void registerNewAccessToken(string accessToken)
@@ -37,8 +36,14 @@ namespace WebWatcher
         // boxes: [left, top, right, bottom].
         public void updateButtonBoxes(string componentName, float[][] boxes)
         {
-            Debug.WriteLine($"updateButtonBoxes(): {componentName}, {boxes}");
+            //Debug.WriteLine($"updateButtonBoxes(): {componentName}, {boxes}");
             updateButtonBoxesCallback(componentName, boxes);
+        }
+
+        // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
+        public void injectKeys(int[] vkCodes)
+        {
+            this.keyInjectionsCallback(vkCodes);
         }
     }
 
@@ -50,12 +55,19 @@ namespace WebWatcher
         private static string FOCUS_APP_NAME = "balabolka";
         private static bool focusAppRunning;
         private static bool focusAppFocused;
+        private static IntPtr focusAppHandle = new IntPtr(-1);
         private readonly Dictionary<string, HashSet<string>> componentButtons =
             new Dictionary<string, HashSet<string>>();
         private readonly KeyLogger keyLogger;
         private readonly System.Threading.Timer timer;
         private CefSharp.DevTools.DevToolsClient devToolsClient;
-        
+
+        private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+        private const UInt32 SWP_NOSIZE = 0x0001;
+        private const UInt32 SWP_NOMOVE = 0x0002;
+        private const UInt32 TOPMOST_FLAGS = SWP_NOMOVE | SWP_NOSIZE;
+        private const UInt32 KEYEVENTF_EXTENDEDKEY = 0x0001;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -107,15 +119,6 @@ namespace WebWatcher
             //        // TODO(cais): Confirm that eye gaze click works after resizing.
             //    });
             //}
-            // This code works for programmatic injection of keys.
-            // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
-            //const uint KEYEVENTF_EXTENDEDKEY = 0x0001;
-            //if (focusAppRunning && focusAppFocused)
-            //{
-            //    // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
-            //    keybd_event(0x41, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-            //    keybd_event(0x0D, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-            //}
         }
 
         private static bool IsProcessRunning(string processName)
@@ -141,6 +144,7 @@ namespace WebWatcher
             {
                 if (windowText.ToString().ToLower().Contains(lowerProcessName))
                 {
+                    focusAppHandle = handle;
                     return true;
                 }
             }
@@ -156,6 +160,23 @@ namespace WebWatcher
                         {
                             AddGazeButtonsForComponent(componentName, boxes);
                         }));
+                return 0;  // TODO(cais): Remove dummy return value.
+            }, async (int[] vkCodes) =>
+            {
+                if (!focusAppRunning || focusAppHandle.ToInt32() == -1)
+                {
+                    return 1;
+                }
+                SetForegroundWindow(focusAppHandle);
+                foreach (var vkCode in vkCodes)
+                {
+                    // TODO(cais): Check vkCode is not out of bound. Else, throw an error.
+                    Debug.WriteLine($"Injecting key {vkCode} to {focusAppHandle.ToInt32()}");  // DEBUG
+                    // NOTE: Repeated calling of keybd_event() without a 1-ms delay between calls
+                    // causes glitches, e.g., when there are repeated keys such as the l's in "Hello".
+                    await Task.Delay(1);
+                    keybd_event((byte)vkCode, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+                }
                 return 0;
             });
             TheBrowser.JavascriptObjectRepository.Register(
@@ -165,6 +186,10 @@ namespace WebWatcher
             Debug.Assert(webViewUrl != null && webViewUrl != "");
             TheBrowser.Load(webViewUrl);
             TheBrowser.ExecuteScriptAsyncWhenPageLoaded("document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
+
+            // https://stackoverflow.com/questions/683330/how-to-make-a-window-always-stay-on-top-in-net
+            var hWnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+            //SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
         }
 
         private static string GetBoxString(float[] box)
