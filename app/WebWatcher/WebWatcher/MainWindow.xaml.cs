@@ -123,6 +123,18 @@ namespace WebWatcher
 
         private static bool IsProcessRunning(string processName)
         {
+            //Process[] processList = Process.GetProcesses();
+            //Debug.WriteLine("---------------------------------------");  // DEBUG
+            //foreach (Process process in processList)
+            //{
+            //    var handle = process.MainWindowHandle;
+            //    if (handle.ToInt32() == 0) continue;
+            //    SysRect rect = new SysRect();
+            //    GetWindowRect(handle, ref rect);
+            //    Debug.WriteLine(
+            //        $"Process main window: {process.MainWindowTitle}: {handle}: [{rect.Left}, {rect.Top}, {rect.Right}, {rect.Bottom}]");
+            //}
+
             string lowerProcessName = processName.ToLower();
             foreach (Process process in Process.GetProcesses())
             {

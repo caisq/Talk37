@@ -2,6 +2,14 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
+public struct SysRect
+{
+    public int Left { get; set; }
+    public int Top { get; set; }
+    public int Right { get; set; }
+    public int Bottom { get; set; }
+}
+
 namespace WebWatcher.Win32
 {
     public partial class Interop
@@ -36,5 +44,9 @@ namespace WebWatcher.Win32
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
+        [DllImport("user32.dll")]
+        public static extern bool GetWindowRect(IntPtr hwnd, ref SysRect rectangle);
     }
+
 }
