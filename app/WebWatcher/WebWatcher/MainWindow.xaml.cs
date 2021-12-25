@@ -61,6 +61,7 @@ namespace WebWatcher
         private readonly KeyLogger keyLogger;
         private readonly System.Threading.Timer timer;
         private CefSharp.DevTools.DevToolsClient devToolsClient;
+        private volatile bool injectingKeys = false;
 
         private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
         private const UInt32 SWP_NOSIZE = 0x0001;
@@ -78,7 +79,7 @@ namespace WebWatcher
 
         private void KeyboardHookHandler(int vkCode)
         {
-            if (!focusAppRunning || !focusAppFocused)
+            if (!focusAppRunning || !focusAppFocused || this.injectingKeys)
             {
                 return;
             }
@@ -180,6 +181,7 @@ namespace WebWatcher
                     return 1;
                 }
                 SetForegroundWindow(focusAppHandle);
+                this.injectingKeys = true;
                 foreach (var vkCode in vkCodes)
                 {
                     // TODO(cais): Check vkCode is not out of bound. Else, throw an error.
@@ -189,6 +191,7 @@ namespace WebWatcher
                     await Task.Delay(1);
                     keybd_event((byte)vkCode, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
                 }
+                this.injectingKeys = false;
                 return 0;
             });
             TheBrowser.JavascriptObjectRepository.Register(
