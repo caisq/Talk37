@@ -244,7 +244,7 @@ namespace WebWatcher
                     {
                         Width = right - left,
                         Height = bottom - top,
-                        Opacity = 0.01
+                        Opacity = 0.01  // This makes the buttons transparent/translucent.
                     };
                     gazeButton.Tag = boxString;
                     gazeButton.Click += GazeButton_Click;
