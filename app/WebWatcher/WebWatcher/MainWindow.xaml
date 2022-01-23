@@ -13,7 +13,7 @@
         WindowStyle="None"
         WindowStartupLocation="Manual"
         Left="0"
-        Top="0"
+        Top="40"
         Height="450" 
         Width="1350"
         Topmost="False"

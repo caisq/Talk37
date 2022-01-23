@@ -18,10 +18,13 @@ namespace WebWatcher
         //private readonly Func<int, int> onDomChangeCallback;
         private readonly Func<string, float[][], Task<int>> updateButtonBoxesCallback;
         private readonly Func<int[], Task<int>> keyInjectionsCallback;
+        private readonly Func<double, double, Task<int>> windowResizeCallback;
         public BoundListener(Func<string, float[][], Task<int>> updateButtonBoxesCallback,
-                             Func<int[], Task<int>> keyInjectionsCallback) {
+                             Func<int[], Task<int>> keyInjectionsCallback,
+                             Func<double, double, Task<int>> windowResizeCallback) {
             this.updateButtonBoxesCallback = updateButtonBoxesCallback;
             this.keyInjectionsCallback = keyInjectionsCallback;
+            this.windowResizeCallback = windowResizeCallback;
         }
 
         public void registerNewAccessToken(string accessToken)
@@ -36,7 +39,6 @@ namespace WebWatcher
         // boxes: [left, top, right, bottom].
         public void updateButtonBoxes(string componentName, float[][] boxes)
         {
-            //Debug.WriteLine($"updateButtonBoxes(): {componentName}, {boxes}");
             updateButtonBoxesCallback(componentName, boxes);
         }
 
@@ -44,6 +46,13 @@ namespace WebWatcher
         public void injectKeys(int[] vkCodes)
         {
             this.keyInjectionsCallback(vkCodes);
+        }
+
+        // Requests resizing of window to the specified height and width
+        // in pixels.
+        public void resizeWindow(double height, double width)
+        {
+            this.windowResizeCallback(height, width);
         }
     }
 
@@ -53,6 +62,8 @@ namespace WebWatcher
     public partial class MainWindow : Window
     {
         private static string FOCUS_APP_NAME = "balabolka";
+        private static double WINDOW_SIZE_HEIGHT_PADDING = 24.0;
+        private static double WINDOW_SIZE_WIDTH_PADDING = 24.0;
         private static bool focusAppRunning;
         private static bool focusAppFocused;
         private static IntPtr focusAppHandle = new IntPtr(-1);
@@ -192,6 +203,16 @@ namespace WebWatcher
                     keybd_event((byte)vkCode, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
                 }
                 this.injectingKeys = false;
+                return 0;
+            }, async (double height, double width) =>
+            {
+                await Application.Current.Dispatcher.BeginInvoke(
+                        System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                        {
+                            Debug.WriteLine($"Resizing window: h={height}; w={width}");
+                            this.Height = height + WINDOW_SIZE_HEIGHT_PADDING;
+                            this.Width = width + WINDOW_SIZE_WIDTH_PADDING;
+                        }));
                 return 0;
             });
             TheBrowser.JavascriptObjectRepository.Register(
