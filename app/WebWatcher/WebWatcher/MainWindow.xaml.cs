@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 using static WebWatcher.Win32.Interop;
 
@@ -212,6 +211,11 @@ namespace WebWatcher
                             Debug.WriteLine($"Resizing window: h={height}; w={width}");
                             this.Height = height + WINDOW_SIZE_HEIGHT_PADDING;
                             this.Width = width + WINDOW_SIZE_WIDTH_PADDING;
+                            TheBrowser.Focus();
+                            // TODO(cais): Solve the problem of loosing focus on CefSharp after resizing.
+                            //var hThisWindow = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+                            //SetForegroundWindow(hThisWindow);
+                            //Debug.WriteLine("Focused on window");  // DEBUG
                         }));
                 return 0;
             });
