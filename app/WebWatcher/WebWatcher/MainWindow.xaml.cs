@@ -189,6 +189,7 @@ namespace WebWatcher
             {
                 if (!focusAppRunning || focusAppHandle.ToInt32() == -1)
                 {
+                    FocusOnMainWindowAndWebView();
                     return 1;
                 }
                 SetForegroundWindow(focusAppHandle);
@@ -203,6 +204,7 @@ namespace WebWatcher
                     keybd_event((byte)vkCode, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
                 }
                 this.injectingKeys = false;
+                FocusOnMainWindowAndWebView();
                 return 0;
             }, async (double height, double width) =>
             {
@@ -213,10 +215,6 @@ namespace WebWatcher
                             this.Height = height + WINDOW_SIZE_HEIGHT_PADDING;
                             this.Width = width + WINDOW_SIZE_WIDTH_PADDING;
                             TheBrowser.Focus();
-                            // TODO(cais): Solve the problem of loosing focus on CefSharp after resizing.
-                            //var hThisWindow = new System.Windows.Interop.WindowInteropHelper(this).Handle;
-                            //SetForegroundWindow(hThisWindow);
-                            //Debug.WriteLine("Focused on window");  // DEBUG
                         }));
                 return 0;
             });
@@ -225,22 +223,43 @@ namespace WebWatcher
 
             authWindow = new AuthWindow();
             Task.Run(async () => {
-                string accessToken = await authWindow.TryGetAccessTokenUsingRefreshToken();
-                string webViewUrl = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_URL");
-                if (accessToken == null)
-                {
-                    authWindow.Show();
-                }
-                else
-                {
-                    webViewUrl = Environment.GetEnvironmentVariable(
-                        "SPEAKFASTER_WEBVIEW_URL_WITH_ACCESS_TOKEN_TEMPLATE");
-                    Debug.Assert(webViewUrl != null && webViewUrl != "");
-                    webViewUrl += accessToken;
-                }
-                Debug.Assert(webViewUrl != null && webViewUrl != "");
-                TheBrowser.Load(webViewUrl);
-                TheBrowser.ExecuteScriptAsyncWhenPageLoaded("document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
+                authWindow.TryGetAccessTokenUsingRefreshToken(
+                    async (string accessToken) =>
+                    {
+                        string webViewUrlTemplate = Environment.GetEnvironmentVariable(
+                            "SPEAKFASTER_WEBVIEW_URL_WITH_ACCESS_TOKEN_TEMPLATE");
+                        Debug.Assert(webViewUrlTemplate != null && webViewUrlTemplate != "");
+                        string webViewUrl = webViewUrlTemplate.Replace("{access_token}", accessToken);
+                        TheBrowser.Load(webViewUrl);
+                        TheBrowser.ExecuteScriptAsyncWhenPageLoaded("document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
+                        // After navigating to the destination URL, auto-focus on this window and
+                        // the web view.
+                        FocusOnMainWindowAndWebView();
+                        return 0;
+                    });
+
+                    //string webViewUrl = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_URL");
+                    //if (accessToken == null)
+                    //{
+                    //    HideMainWindow();
+                    //    await Application.Current.Dispatcher.BeginInvoke(
+                    //        System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                    //        {
+                    //            authWindow.Show();
+                    //        }));
+                    //}
+                    //else
+                    //{
+                    //string webViewUrlTemplate = Environment.GetEnvironmentVariable(
+                    //    "SPEAKFASTER_WEBVIEW_URL_WITH_ACCESS_TOKEN_TEMPLATE");
+                    //Debug.Assert(webViewUrlTemplate != null && webViewUrlTemplate != "");
+                    //webViewUrl = webViewUrlTemplate.Replace("{access_token}", accessToken);
+                    //TheBrowser.Load(webViewUrl);
+                    //TheBrowser.ExecuteScriptAsyncWhenPageLoaded("document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
+                    //// After navigating to the destination URL, auto-focus on this window and
+                    //// the web view.
+                    //FocusOnMainWindowAndWebView();
+                //}
             });
 
             //string webViewUrl = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_URL");
@@ -251,6 +270,26 @@ namespace WebWatcher
             // https://stackoverflow.com/questions/683330/how-to-make-a-window-always-stay-on-top-in-net
             //var hWnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
             //SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
+        }
+
+        private async void FocusOnMainWindowAndWebView()
+        {
+            await Application.Current.Dispatcher.BeginInvoke(
+                System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                {
+                    IntPtr hThisWindow = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+                    _ = SetForegroundWindow(hThisWindow);
+                    _ = TheBrowser.Focus();
+                }));
+        }
+
+        private async void HideMainWindow()
+        {
+            await Application.Current.Dispatcher.BeginInvoke(
+                System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                {
+                    Hide();
+                }));
         }
 
         private static string GetBoxString(float[] box)

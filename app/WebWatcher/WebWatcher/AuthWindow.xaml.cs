@@ -15,20 +15,46 @@ using System.Windows;
 
 namespace WebWatcher
 {
+    public class UserInfo
+    {
+        public readonly string userEmail;
+        public readonly string userGivenName;
+        public readonly string userFamilyName;
+        public readonly string refreshToken;
+        public UserInfo(string userEmail,
+                        string userGivenName,
+                        string userFamilyName,
+                        string refreshToken)
+        {
+            this.userEmail = userEmail;
+            this.userGivenName = userGivenName;
+            this.userFamilyName = userFamilyName;
+            this.refreshToken = refreshToken;
+        }
+    }
     public partial class AuthWindow : Window
     {
         private const string authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
+        private Func<string, Task<int>> newAccessTokenCallback;
         public AuthWindow()
         {
             InitializeComponent();
         }
 
-        public async Task<string> TryGetAccessTokenUsingRefreshToken()
+        public async void TryGetAccessTokenUsingRefreshToken(
+            Func<string, Task<int>> newAccessTokenCallback)
         {
-            string refreshToken = LoadRefreshToken();
+            UserInfo userInfo = LoadUserInfo();
+            if (userInfo == null)
+            {
+                ShowAndGetAccessToken(newAccessTokenCallback);
+                return;
+            }
+            string refreshToken = userInfo.refreshToken;
             if (refreshToken == null || refreshToken == "")
             {
-                return null;
+                ShowAndGetAccessToken(newAccessTokenCallback);
+                return;
             }
 
             string clientId = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_CLIENT_ID");
@@ -67,7 +93,7 @@ namespace WebWatcher
 
                     string accessToken = tokenEndpointDecoded["access_token"];
                     Debug.WriteLine($"Access token from refresh token: {accessToken}");
-                    return accessToken;
+                    _ = await newAccessTokenCallback(accessToken);
                 }
             }
             catch (WebException ex)
@@ -87,8 +113,19 @@ namespace WebWatcher
                     }
 
                 }
-                return null;
+                ShowAndGetAccessToken(newAccessTokenCallback);
+                return;
             }
+        }
+
+        private void ShowAndGetAccessToken(Func<string, Task<int>> newAccessTokenCallback)
+        {
+            this.newAccessTokenCallback = newAccessTokenCallback;
+            Application.Current.Dispatcher.BeginInvoke(
+                System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                {
+                    Show();
+                }));
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -99,11 +136,11 @@ namespace WebWatcher
         {
             string state = RandomDataBase64url(32);
             string code_verifier = RandomDataBase64url(32);
-            string code_challenge = Base64urlencodeNoPadding(sha256(code_verifier));
+            string code_challenge = Base64urlencodeNoPadding(Sha256(code_verifier));
             const string code_challenge_method = "S256";
 
             string redirectURI = string.Format("http://{0}:{1}/", IPAddress.Loopback, GetRandomUnusedPort());
-            var http = new HttpListener();
+            HttpListener http = new HttpListener();
             http.Prefixes.Add(redirectURI);
             Debug.WriteLine($"HTTP server started at {redirectURI}");
             http.Start();
@@ -111,32 +148,33 @@ namespace WebWatcher
             string clientId = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_CLIENT_ID");
             string clientSecret = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_CLIENT_SECRET");
             Debug.Assert(clientId != null && clientId != "");
+            // scope=openid
             string authorizationRequest = string.Format(
-                "{0}?response_type=code&scope=openid%20profile&redirect_uri={1}&client_id={2}&state={3}&code_challenge={4}&code_challenge_method={5}",
+                "{0}?response_type=code&scope=email%20profile&redirect_uri={1}&client_id={2}&state={3}&code_challenge={4}&code_challenge_method={5}",
                 authorizationEndpoint,
-                System.Uri.EscapeDataString(redirectURI),
+                Uri.EscapeDataString(redirectURI),
                 clientId,
                 state,
                 code_challenge,
                 code_challenge_method);
 
             // Opens request in the browser.
-            System.Diagnostics.Process.Start(authorizationRequest);
+            _ = Process.Start(authorizationRequest);
 
             // Waits for the OAuth authorization response.
-            var context = await http.GetContextAsync();
+            HttpListenerContext context = await http.GetContextAsync();
 
             // Brings this app back to the foreground.
-            this.Activate();
+            _ = Activate();
 
             //// Sends an HTTP response to the browser.
             //var response = context.Response;
             // Sends an HTTP response to the browser.
-            var response = context.Response;
+            HttpListenerResponse response = context.Response;
             string responseString = string.Format("<html><head><meta http-equiv='refresh' content='10;url=https://google.com'></head><body>Please return to the app.</body></html>");
-            var buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
             response.ContentLength64 = buffer.Length;
-            var responseOutput = response.OutputStream;
+            Stream responseOutput = response.OutputStream;
             Task responseTask = responseOutput.WriteAsync(buffer, 0, buffer.Length).ContinueWith((task) =>
             {
                 responseOutput.Close();
@@ -147,7 +185,7 @@ namespace WebWatcher
             // Checks for errors.
             if (context.Request.QueryString.Get("error") != null)
             {
-                Debug.WriteLine(String.Format("OAuth authorization error: {0}.", context.Request.QueryString.Get("error")));
+                Debug.WriteLine(string.Format("OAuth authorization error: {0}.", context.Request.QueryString.Get("error")));
                 return;
             }
             if (context.Request.QueryString.Get("code") == null
@@ -158,14 +196,14 @@ namespace WebWatcher
             }
 
             // extracts the code
-            var code = context.Request.QueryString.Get("code");
-            var incoming_state = context.Request.QueryString.Get("state");
+            string code = context.Request.QueryString.Get("code");
+            string incoming_state = context.Request.QueryString.Get("state");
 
             // Compares the receieved state to the expected value, to ensure that
             // this app made the request which resulted in authorization.
             if (incoming_state != state)
             {
-                Debug.WriteLine(String.Format("Received request with invalid state ({0})", incoming_state));
+                Debug.WriteLine(string.Format("Received request with invalid state ({0})", incoming_state));
                 return;
             }
             Debug.WriteLine("Authorization code: " + code);
@@ -185,7 +223,7 @@ namespace WebWatcher
             string tokenRequestURI = "https://www.googleapis.com/oauth2/v4/token";
             string tokenRequestBody = string.Format("code={0}&redirect_uri={1}&client_id={2}&code_verifier={3}&client_secret={4}&scope=&grant_type=authorization_code",
                 code,
-                System.Uri.EscapeDataString(redirectURI),
+                Uri.EscapeDataString(redirectURI),
                 clientId,
                 code_verifier,
                 clientSecret
@@ -216,17 +254,26 @@ namespace WebWatcher
                     Dictionary<string, string> tokenEndpointDecoded =
                         JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
 
-                    string access_token = tokenEndpointDecoded["access_token"];
+                    string accessToken = tokenEndpointDecoded["access_token"];
                     string refreshToken = tokenEndpointDecoded["refresh_token"];
-                    SaveRefresthToken(refreshToken);
-                    UserInfoCall(access_token);
+                    UserInfo userInfo = await UserInfoCall(accessToken, refreshToken);
+                    SaveUserInfo(userInfo);
+                    if (this.newAccessTokenCallback != null)
+                    {
+                        Application.Current.Dispatcher.BeginInvoke(
+                            System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                            {
+                                Hide();
+                            }));
+                        _ = this.newAccessTokenCallback(accessToken);
+                    }
                 }
             }
             catch (WebException ex)
             {
                 if (ex.Status == WebExceptionStatus.ProtocolError)
                 {
-                    var response = ex.Response as HttpWebResponse;
+                    HttpWebResponse response = ex.Response as HttpWebResponse;
                     if (response != null)
                     {
                         Debug.WriteLine("HTTP: " + response.StatusCode);
@@ -242,20 +289,23 @@ namespace WebWatcher
             }
         }
 
-        private void SaveRefresthToken(string refreshToken)
+        private void SaveUserInfo(UserInfo userInfo)
         {
             string appDataFilePath = GetAppDataFilePath();
-            string timestamp = DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffzzz");
+            string timestamp = DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffZ");
             Dictionary<string, string> appDataObject = new Dictionary<string, string>
             {
-                { "refresh_token", refreshToken },
-                { "refresh_token_creation_timestamp", timestamp }
+                { "refresh_token", userInfo.refreshToken },
+                { "refresh_token_creation_timestamp", timestamp },
+                { "user_email", userInfo.userEmail },
+                { "user_given_name", userInfo.userGivenName },
+                { "user_family_name", userInfo.userFamilyName },
             };
             string jsonString = JsonConvert.SerializeObject(appDataObject);
             File.WriteAllText(appDataFilePath, jsonString);
         }
 
-        private string LoadRefreshToken()
+        private UserInfo LoadUserInfo()
         {
             string appDataFilePath = GetAppDataFilePath();
             if (!File.Exists(appDataFilePath))
@@ -265,8 +315,11 @@ namespace WebWatcher
             string txt = File.ReadAllText(appDataFilePath);
             Dictionary<string, string> appDataObject =
                 JsonConvert.DeserializeObject<Dictionary<string, string>>(txt);
-            return appDataObject.ContainsKey("refresh_token") ?
-                appDataObject["refresh_token"] : null;
+            return new UserInfo(
+                appDataObject["user_email"],
+                appDataObject["user_given_name"],
+                appDataObject["user_family_name"],
+                appDataObject["refresh_token"]);
         }
 
         private string GetAppDataFilePath()
@@ -276,34 +329,39 @@ namespace WebWatcher
             string dirPath = Path.Combine(path, appName);
             if (!File.Exists(dirPath))
             {
-                Directory.CreateDirectory(dirPath);
+                _ = Directory.CreateDirectory(dirPath);
             }
-            return Path.Combine(path, appName, "app-data.json"); 
+            return Path.Combine(path, appName, "app-data.json");
         }
 
-        private async void UserInfoCall(string access_token)
+        private async Task<UserInfo> UserInfoCall(string accessToken, string refreshToken)
         {
             Debug.WriteLine("Making API Call to Userinfo...");
 
-            // builds the  request
+            // builds the request
             string userinfoRequestURI = "https://www.googleapis.com/oauth2/v3/userinfo";
-
-            // sends the request
             HttpWebRequest userinfoRequest = (HttpWebRequest)WebRequest.Create(userinfoRequestURI);
             userinfoRequest.Method = "GET";
-            userinfoRequest.Headers.Add(string.Format("Authorization: Bearer {0}", access_token));
-            //userinfoRequest.ContentType = "application/x-www-form-urlencoded";
+            userinfoRequest.Headers.Add(string.Format("Authorization: Bearer {0}", accessToken));
             userinfoRequest.ContentType = "application/json";
             userinfoRequest.Accept = "Accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 
             // gets the response
             WebResponse userinfoResponse = await userinfoRequest.GetResponseAsync();
+            string userinfoResponseText;
             using (StreamReader userinfoResponseReader = new StreamReader(userinfoResponse.GetResponseStream()))
             {
                 // reads response body
-                string userinfoResponseText = await userinfoResponseReader.ReadToEndAsync();
+                userinfoResponseText = await userinfoResponseReader.ReadToEndAsync();
                 Debug.WriteLine(userinfoResponseText);
             }
+            Dictionary<string, string> userInfo =
+                JsonConvert.DeserializeObject<Dictionary<string, string>>(userinfoResponseText);
+            return new UserInfo(
+                userInfo["email"], 
+                userInfo["given_name"],
+                userInfo["family_name"],
+                refreshToken);
         }
 
         private static string RandomDataBase64url(uint length)
@@ -325,7 +383,7 @@ namespace WebWatcher
             return base64;
         }
 
-        private static byte[] sha256(string inputStirng)
+        private static byte[] Sha256(string inputStirng)
         {
             byte[] bytes = Encoding.ASCII.GetBytes(inputStirng);
             SHA256Managed sha256 = new SHA256Managed();
@@ -334,9 +392,9 @@ namespace WebWatcher
 
         private static int GetRandomUnusedPort()
         {
-            var listener = new TcpListener(IPAddress.Loopback, 0);
+            TcpListener listener = new TcpListener(IPAddress.Loopback, 0);
             listener.Start();
-            var port = ((IPEndPoint)listener.LocalEndpoint).Port;
+            int port = ((IPEndPoint)listener.LocalEndpoint).Port;
             listener.Stop();
             return port;
         }
