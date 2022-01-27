@@ -125,6 +125,7 @@ namespace WebWatcher
                 System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                 {
                     Show();
+                    PerformSignIn();
                 }));
         }
 
@@ -134,6 +135,10 @@ namespace WebWatcher
         }
         private async void button_Click(object sender, RoutedEventArgs e)
         {
+            PerformSignIn();
+        }
+
+        private async void PerformSignIn() { 
             string state = RandomDataBase64url(32);
             string code_verifier = RandomDataBase64url(32);
             string code_challenge = Base64urlencodeNoPadding(Sha256(code_verifier));

@@ -14,15 +14,33 @@
         WindowStartupLocation="Manual"
         Left="0"
         Top="300"
-        Height="250" 
-        Width="400"
+        Height="160" 
+        Width="450"
         Topmost="False"
         Loaded="Window_Loaded">
     <Grid>
         <Button x:Name="button"
-                HorizontalAlignment="Left" Margin="18,22,0,0" VerticalAlignment="Top" Width="206" Height="46" Click="button_Click"
+                FontSize="28"
+                HorizontalAlignment="Left"
+                Margin="18,22,0,0" 
+                VerticalAlignment="Top"
+                Width="400"
+                Height="100"
+                Click="button_Click"
                 Padding="0">
-            Sign In with Google  
+            <StackPanel
+                Orientation="Horizontal"
+                VerticalAlignment="Center" >
+                <Image 
+                    Height="60"
+                    Width="60"
+                    Source="Assets/g-logo.png"
+                    Stretch="Fill"
+                    Margin="0,0,20,0" />
+                <TextBlock Margin="0,8,0,0">
+                    Sign in with Google
+                </TextBlock>
+            </StackPanel>
         </Button>
     </Grid>
 </Window>

@@ -189,7 +189,7 @@ namespace WebWatcher
             {
                 if (!focusAppRunning || focusAppHandle.ToInt32() == -1)
                 {
-                    FocusOnMainWindowAndWebView();
+                    FocusOnMainWindowAndWebView(/* showWindow= */ false);
                     return 1;
                 }
                 SetForegroundWindow(focusAppHandle);
@@ -204,7 +204,7 @@ namespace WebWatcher
                     keybd_event((byte)vkCode, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
                 }
                 this.injectingKeys = false;
-                FocusOnMainWindowAndWebView();
+                FocusOnMainWindowAndWebView(/* showWindow= */ false);
                 return 0;
             }, async (double height, double width) =>
             {
@@ -221,6 +221,7 @@ namespace WebWatcher
             TheBrowser.JavascriptObjectRepository.Register(
                 "boundListener", listener, isAsync: true, options: BindingOptions.DefaultBinder);
 
+            HideMainWindow();
             authWindow = new AuthWindow();
             Task.Run(async () => {
                 authWindow.TryGetAccessTokenUsingRefreshToken(
@@ -234,7 +235,7 @@ namespace WebWatcher
                         TheBrowser.ExecuteScriptAsyncWhenPageLoaded("document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
                         // After navigating to the destination URL, auto-focus on this window and
                         // the web view.
-                        FocusOnMainWindowAndWebView();
+                        FocusOnMainWindowAndWebView(/* showWindow= */ true);
                         return 0;
                     });
 
@@ -272,11 +273,15 @@ namespace WebWatcher
             //SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
         }
 
-        private async void FocusOnMainWindowAndWebView()
+        private async void FocusOnMainWindowAndWebView(Boolean showWindow)
         {
             await Application.Current.Dispatcher.BeginInvoke(
                 System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                 {
+                    if (showWindow)
+                    {
+                        Show();
+                    }
                     IntPtr hThisWindow = new System.Windows.Interop.WindowInteropHelper(this).Handle;
                     _ = SetForegroundWindow(hThisWindow);
                     _ = TheBrowser.Focus();
