@@ -63,6 +63,7 @@ namespace WebWatcher
         private static string FOCUS_APP_NAME = "balabolka";
         private static double WINDOW_SIZE_HEIGHT_PADDING = 24.0;
         private static double WINDOW_SIZE_WIDTH_PADDING = 24.0;
+        private AuthWindow authWindow;
         private static bool focusAppRunning;
         private static bool focusAppFocused;
         private static IntPtr focusAppHandle = new IntPtr(-1);
@@ -222,13 +223,33 @@ namespace WebWatcher
             TheBrowser.JavascriptObjectRepository.Register(
                 "boundListener", listener, isAsync: true, options: BindingOptions.DefaultBinder);
 
-            string webViewUrl = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_URL");
-            Debug.Assert(webViewUrl != null && webViewUrl != "");
-            TheBrowser.Load(webViewUrl);
-            TheBrowser.ExecuteScriptAsyncWhenPageLoaded("document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
+            authWindow = new AuthWindow();
+            Task.Run(async () => {
+                string accessToken = await authWindow.TryGetAccessTokenUsingRefreshToken();
+                string webViewUrl = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_URL");
+                if (accessToken == null)
+                {
+                    authWindow.Show();
+                }
+                else
+                {
+                    webViewUrl = Environment.GetEnvironmentVariable(
+                        "SPEAKFASTER_WEBVIEW_URL_WITH_ACCESS_TOKEN_TEMPLATE");
+                    Debug.Assert(webViewUrl != null && webViewUrl != "");
+                    webViewUrl += accessToken;
+                }
+                Debug.Assert(webViewUrl != null && webViewUrl != "");
+                TheBrowser.Load(webViewUrl);
+                TheBrowser.ExecuteScriptAsyncWhenPageLoaded("document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
+            });
+
+            //string webViewUrl = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_URL");
+            //Debug.Assert(webViewUrl != null && webViewUrl != "");
+            //TheBrowser.Load(webViewUrl);
+            //TheBrowser.ExecuteScriptAsyncWhenPageLoaded("document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
 
             // https://stackoverflow.com/questions/683330/how-to-make-a-window-always-stay-on-top-in-net
-            var hWnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+            //var hWnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
             //SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
         }
 
