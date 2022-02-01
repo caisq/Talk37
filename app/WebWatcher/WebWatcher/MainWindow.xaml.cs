@@ -107,7 +107,7 @@ namespace WebWatcher
             {
                 if (process.ProcessName.ToLower().Contains(lowerProcessName))
                 {
-
+                    focusAppHandle = process.MainWindowHandle;
                     return true;
                 }
             }
@@ -148,6 +148,10 @@ namespace WebWatcher
                     FocusOnMainWindowAndWebView(/* showWindow= */ false);
                     return 1;
                 }
+                if (vkCodes.Length == 0)
+                {
+                    return 1;
+                }
                 SetForegroundWindow(focusAppHandle);
                 this.injectingKeys = true;
                 foreach (var vkCode in vkCodes)
@@ -160,7 +164,10 @@ namespace WebWatcher
                     keybd_event((byte)vkCode, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
                 }
                 this.injectingKeys = false;
-                FocusOnMainWindowAndWebView(/* showWindow= */ false);
+                // We don't focus back on the main window right away because we assuem the
+                // user wants to keep typing in the other window. If we change out mind,
+                // use the following line of code.
+                //FocusOnMainWindowAndWebView(/* showWindow= */ false);
                 return 0;
             }, async (double height, double width) =>
             {
