@@ -14,7 +14,6 @@ namespace WebWatcher
 {
     class BoundListener
     {
-        //private readonly Func<int, int> onDomChangeCallback;
         private readonly Func<string, float[][], Task<int>> updateButtonBoxesCallback;
         private readonly Func<int[], Task<int>> keyInjectionsCallback;
         private readonly Func<double, double, Task<int>> windowResizeCallback;
@@ -74,10 +73,6 @@ namespace WebWatcher
         private CefSharp.DevTools.DevToolsClient devToolsClient;
         private volatile bool injectingKeys = false;
 
-        private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
-        private const UInt32 SWP_NOSIZE = 0x0001;
-        private const UInt32 SWP_NOMOVE = 0x0002;
-        private const UInt32 TOPMOST_FLAGS = SWP_NOMOVE | SWP_NOSIZE;
         private const UInt32 KEYEVENTF_EXTENDEDKEY = 0x0001;
 
         public MainWindow()
@@ -97,61 +92,22 @@ namespace WebWatcher
             // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
             Debug.WriteLine($"Key in focus app: {vkCode}, {(char) vkCode}");  // DEBUG
             TheBrowser.ExecuteScriptAsync($"window.externalKeypressHook({vkCode})");
-            //if (devToolsClient == null)
-            //{
-            //    // TODO(cais): This fails occasionaly due to a race condition. Fix it.
-            //    devToolsClient = TheBrowser.GetDevToolsClient();
-            //}
-            //devToolsClient.Input.DispatchKeyEventAsync(
-            //    type: CefSharp.DevTools.Input.DispatchKeyEventType.KeyDown,
-            //    key: ((char) vkCode).ToString().ToLower());
-            // TODO(cais): Make comma, period, and other punctuation work?
         }
 
         public async void TimerTick(object state)
         {            
             focusAppRunning = IsProcessRunning(FOCUS_APP_NAME);
             focusAppFocused = IsProcessFocused(FOCUS_APP_NAME);
-
-            // This code works for showing and hiding window.
-            //if (!(focusAppRunning && focusAppFocused))
-            //{
-            //    Application.Current.Dispatcher.Invoke(Hide);
-            //} else
-            //{
-            //    Application.Current.Dispatcher.Invoke(Show);
-            //}
-            // This code works for resizing window.
-            //if (focusAppRunning && focusAppFocused)
-            //{
-            //    Application.Current.Dispatcher.Invoke(() =>
-            //    {
-            //        Debug.WriteLine($"Window height = {this.Height}");
-            //        this.Height += 10;
-            //        // TODO(cais): Confirm that eye gaze click works after resizing.
-            //    });
-            //}
         }
 
         private static bool IsProcessRunning(string processName)
         {
-            //Process[] processList = Process.GetProcesses();
-            //Debug.WriteLine("---------------------------------------");  // DEBUG
-            //foreach (Process process in processList)
-            //{
-            //    var handle = process.MainWindowHandle;
-            //    if (handle.ToInt32() == 0) continue;
-            //    SysRect rect = new SysRect();
-            //    GetWindowRect(handle, ref rect);
-            //    Debug.WriteLine(
-            //        $"Process main window: {process.MainWindowTitle}: {handle}: [{rect.Left}, {rect.Top}, {rect.Right}, {rect.Bottom}]");
-            //}
-
             string lowerProcessName = processName.ToLower();
             foreach (Process process in Process.GetProcesses())
             {
                 if (process.ProcessName.ToLower().Contains(lowerProcessName))
                 {
+
                     return true;
                 }
             }
@@ -238,41 +194,8 @@ namespace WebWatcher
                         FocusOnMainWindowAndWebView(/* showWindow= */ true);
                         return 0;
                     });
-
-                    //string webViewUrl = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_URL");
-                    //if (accessToken == null)
-                    //{
-                    //    HideMainWindow();
-                    //    await Application.Current.Dispatcher.BeginInvoke(
-                    //        System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
-                    //        {
-                    //            authWindow.Show();
-                    //        }));
-                    //}
-                    //else
-                    //{
-                    //string webViewUrlTemplate = Environment.GetEnvironmentVariable(
-                    //    "SPEAKFASTER_WEBVIEW_URL_WITH_ACCESS_TOKEN_TEMPLATE");
-                    //Debug.Assert(webViewUrlTemplate != null && webViewUrlTemplate != "");
-                    //webViewUrl = webViewUrlTemplate.Replace("{access_token}", accessToken);
-                    //TheBrowser.Load(webViewUrl);
-                    //TheBrowser.ExecuteScriptAsyncWhenPageLoaded("document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
-                    //// After navigating to the destination URL, auto-focus on this window and
-                    //// the web view.
-                    //FocusOnMainWindowAndWebView();
-                //}
             });
-
-            //string webViewUrl = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_URL");
-            //Debug.Assert(webViewUrl != null && webViewUrl != "");
-            //TheBrowser.Load(webViewUrl);
-            //TheBrowser.ExecuteScriptAsyncWhenPageLoaded("document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
-
-            // https://stackoverflow.com/questions/683330/how-to-make-a-window-always-stay-on-top-in-net
-            //var hWnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
-            //SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
         }
-
         private async void FocusOnMainWindowAndWebView(Boolean showWindow)
         {
             await Application.Current.Dispatcher.BeginInvoke(
