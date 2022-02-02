@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -66,14 +68,16 @@ namespace WebWatcher
         private static bool focusAppRunning;
         private static bool focusAppFocused;
         private static IntPtr focusAppHandle = new IntPtr(-1);
+        private IntPtr hThisWindow = new IntPtr(-1);
         private readonly Dictionary<string, HashSet<string>> componentButtons =
             new Dictionary<string, HashSet<string>>();
         private readonly KeyLogger keyLogger;
         private readonly System.Threading.Timer timer;
         private CefSharp.DevTools.DevToolsClient devToolsClient;
         private volatile bool injectingKeys = false;
-
         private const UInt32 KEYEVENTF_EXTENDEDKEY = 0x0001;
+        private double windowTop = -1;
+        private double windowBottom = -1;
 
         public MainWindow()
         {
@@ -98,6 +102,27 @@ namespace WebWatcher
         {            
             focusAppRunning = IsProcessRunning(FOCUS_APP_NAME);
             focusAppFocused = IsProcessFocused(FOCUS_APP_NAME);
+            string onScreenKeyboardPosition = InferOnScreenKeyboardPosition();
+            string selfWindowPosition = InferSelfWindowPosition();
+            Debug.WriteLine($"keyboard={onScreenKeyboardPosition}; selfWindowPosition={selfWindowPosition}");
+            if (onScreenKeyboardPosition == "top" && selfWindowPosition == "top")
+            {
+                await Application.Current.Dispatcher.BeginInvoke(
+                        System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                        {
+                            Top = 450;  // TODO(cais): Do not hardcode.
+                            UpdateWindowGeometryInternal();
+                        }));
+            } else if (onScreenKeyboardPosition == "bottom" && selfWindowPosition == "bottom")
+            {
+                await Application.Current.Dispatcher.BeginInvoke(
+                        System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                        {
+                            Top = 40;  // TODO(cais): Do not hardcode.
+                            UpdateWindowGeometryInternal();
+                        }));
+            }
+
         }
 
         private static bool IsProcessRunning(string processName)
@@ -133,6 +158,7 @@ namespace WebWatcher
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            UpdateWindowGeometryInternal();
             BoundListener listener = new BoundListener(async (string componentName, float[][] boxes) =>
             {
                 await Application.Current.Dispatcher.BeginInvoke(
@@ -177,6 +203,7 @@ namespace WebWatcher
                             Debug.WriteLine($"Resizing window: h={height}; w={width}");
                             this.Height = height + WINDOW_SIZE_HEIGHT_PADDING;
                             this.Width = width + WINDOW_SIZE_WIDTH_PADDING;
+                            UpdateWindowGeometryInternal();
                             TheBrowser.Focus();
                         }));
                 return 0;
@@ -195,13 +222,20 @@ namespace WebWatcher
                         Debug.Assert(webViewUrlTemplate != null && webViewUrlTemplate != "");
                         string webViewUrl = webViewUrlTemplate.Replace("{access_token}", accessToken);
                         TheBrowser.Load(webViewUrl);
-                        TheBrowser.ExecuteScriptAsyncWhenPageLoaded("document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
+                        TheBrowser.ExecuteScriptAsyncWhenPageLoaded(
+                            "document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
                         // After navigating to the destination URL, auto-focus on this window and
                         // the web view.
                         FocusOnMainWindowAndWebView(/* showWindow= */ true);
                         return 0;
                     });
             });
+        }
+
+        private void UpdateWindowGeometryInternal()
+        {
+            windowTop = Top;
+            windowBottom = Top + Height;
         }
         private async void FocusOnMainWindowAndWebView(Boolean showWindow)
         {
@@ -212,7 +246,10 @@ namespace WebWatcher
                     {
                         Show();
                     }
-                    IntPtr hThisWindow = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+                    if (hThisWindow.ToInt32() == -1)
+                    {
+                        hThisWindow = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+                    }
                     _ = SetForegroundWindow(hThisWindow);
                     _ = TheBrowser.Focus();
                 }));
@@ -333,6 +370,115 @@ namespace WebWatcher
             var button = (Button)sender;
             var address = button?.Tag?.ToString();
             TheBrowser.Address = address;
+        }
+
+        private bool IsWindowInForeground()
+        {
+            if (hThisWindow.ToInt32() == -1)
+            {
+                return false;
+            }
+            return GetForegroundWindow() == hThisWindow;
+        }
+
+        private static double SCREEN_SCALE = 2.0; // TODO(cais): DO NOT HARDCODE.
+
+        private string InferSelfWindowPosition()
+        {
+            int height = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height;
+            if (windowTop != -1)
+            {
+                double windowMiddle = (windowTop + windowBottom) / 2;
+                if (windowMiddle < 0.5 * height / SCREEN_SCALE)
+                {
+                    return "top";
+                }
+                else
+                {
+                    return "bottom";
+                }
+            }
+            return null;
+        }
+
+        private string InferOnScreenKeyboardPosition()
+        {
+            int width = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
+            int height = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height;
+            Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+            Graphics gfxScreenshot = Graphics.FromImage(bitmap);
+            gfxScreenshot.CopyFromScreen(
+                System.Windows.Forms.Screen.PrimaryScreen.Bounds.X,
+                System.Windows.Forms.Screen.PrimaryScreen.Bounds.Y,
+                0, 0, System.Windows.Forms.Screen.PrimaryScreen.Bounds.Size,
+                CopyPixelOperation.SourceCopy);
+            int xMargin = 64;
+            bool checkTop = true;
+            bool checkBottom = true;
+            //string selfPosition = InferSelfWindowPosition();
+            //if (selfPosition == "top")
+            //{
+            //    checkTop = false;
+            //} else if (selfPosition == "bottom")
+            //{
+            //    checkBottom = false;
+            //}
+            if (checkTop && IsPrimarilyBlack(bitmap, 0.05f, 0.50f, xMargin, 64))
+            {
+                Debug.WriteLine("** Found keyboard at top");
+                return "top";
+            }
+            if (checkBottom && IsPrimarilyBlack(bitmap, 0.55f, 0.90f, xMargin, 64))
+            {
+                Debug.WriteLine("** Found keyboard at bottom");
+                return "bottom";
+            }
+            // Screen height: 1824. Do not do this when self is on.
+            return null;
+            // Bottom half criterion: From 950 to 1700: 75% or more of lines have > 0.5 blackRatio
+            // Top half criterion: From 50 to 900: 75% or more of lines have > 0.5 blackRatio
+        }
+
+        private bool IsPrimarilyBlack(Bitmap bitmap,
+                                      float minYRatio,
+                                      float maxYRatio,
+                                      int xMargin,
+                                      int pixelThreshold)
+        {
+            bool anyCyan = false;
+            int minY = (int) (minYRatio * bitmap.Height);
+            int maxY = (int) (maxYRatio * bitmap.Height);
+            int minX = xMargin;
+            int maxX = bitmap.Width - xMargin;
+            int numBlackRows = 0;
+            for (int j = minY; j <= maxY; ++j)
+            {
+                int numBlackPixels = 0;
+                for (int i = minX; i  < maxX; ++i)
+                {
+                    Color color = bitmap.GetPixel(i, j);
+                    if (color.R == color.G && color.G == color.B &&
+                        color.R < pixelThreshold && color.G < pixelThreshold && color.B < pixelThreshold)
+                    {
+                        numBlackPixels++;
+                    }
+                    if (color.R == 0 && color.G == 255 && color.B == 255)
+                    {
+                        anyCyan = true;
+                    }
+                }
+                float blackRatio = (float) numBlackPixels / (maxX - minX);
+                if (blackRatio > 0.5)
+                {
+                    numBlackRows++;
+                }
+            }
+            if (anyCyan)
+            {
+                Debug.WriteLine($"Detected cyan! {minYRatio}");  // DEBUG
+                return false;
+            }
+            return (float)numBlackRows / (maxY - minY) > 0.5;
         }
     }
 }

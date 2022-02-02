@@ -110,7 +110,7 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
                 VisualTreeHelper.HitTest(window, null, OnResultCallback, hitTestParameters);
 
                 HitTestResultBehavior OnResultCallback(HitTestResult result)
-                {
+                { 
                     HitTestResultBehavior value;
 
                     if (result is PointHitTestResult hitTestResult &&
@@ -118,6 +118,7 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
                         elementHit.IsHitTestVisible)
                     {
                         element = elementHit;
+                        //System.Diagnostics.Debug.WriteLine($"element hit: {element.GetType()}"); // DEBUG
                         pointHit = hitTestResult.PointHit;
                         value = HitTestResultBehavior.Stop;
                     }
