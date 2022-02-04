@@ -104,25 +104,25 @@ namespace WebWatcher
             focusAppFocused = IsProcessFocused(FOCUS_APP_NAME);
             string onScreenKeyboardPosition = InferOnScreenKeyboardPosition();
             string selfWindowPosition = InferSelfWindowPosition();
-            Debug.WriteLine($"keyboard={onScreenKeyboardPosition}; selfWindowPosition={selfWindowPosition}");
-            if (onScreenKeyboardPosition == "top" && selfWindowPosition == "top")
-            {
-                await Application.Current.Dispatcher.BeginInvoke(
-                        System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
-                        {
-                            Top = 450;  // TODO(cais): Do not hardcode.
-                            UpdateWindowGeometryInternal();
-                        }));
-            } else if (onScreenKeyboardPosition == "bottom" && selfWindowPosition == "bottom")
-            {
-                await Application.Current.Dispatcher.BeginInvoke(
-                        System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
-                        {
-                            Top = 40;  // TODO(cais): Do not hardcode.
-                            UpdateWindowGeometryInternal();
-                        }));
-            }
-
+            // TODO(cais): Refine the logic.
+            //Debug.WriteLine($"keyboard={onScreenKeyboardPosition}; selfWindowPosition={selfWindowPosition}");
+            //if (onScreenKeyboardPosition == "top" && selfWindowPosition == "top")
+            //{
+            //    await Application.Current.Dispatcher.BeginInvoke(
+            //            System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+            //            {
+            //                Top = 450;  // TODO(cais): Do not hardcode.
+            //                UpdateWindowGeometryInternal();
+            //            }));
+            //} else if (onScreenKeyboardPosition == "bottom" && selfWindowPosition == "bottom")
+            //{
+            //    await Application.Current.Dispatcher.BeginInvoke(
+            //            System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+            //            {
+            //                Top = 40;  // TODO(cais): Do not hardcode.
+            //                UpdateWindowGeometryInternal();
+            //            }));
+            //}
         }
 
         private static bool IsProcessRunning(string processName)
@@ -132,7 +132,10 @@ namespace WebWatcher
             {
                 if (process.ProcessName.ToLower().Contains(lowerProcessName))
                 {
-                    focusAppHandle = process.MainWindowHandle;
+                    if (process.MainWindowHandle.ToInt32() > 0)
+                    {
+                        focusAppHandle = process.MainWindowHandle;
+                    }
                     return true;
                 }
             }
@@ -169,7 +172,7 @@ namespace WebWatcher
                 return 0;  // TODO(cais): Remove dummy return value.
             }, async (int[] vkCodes) =>
             {
-                if (!focusAppRunning || focusAppHandle.ToInt32() == -1)
+                if (!focusAppRunning || focusAppHandle.ToInt32() <= 0)
                 {
                     FocusOnMainWindowAndWebView(/* showWindow= */ false);
                     return 1;
@@ -423,12 +426,18 @@ namespace WebWatcher
             //{
             //    checkBottom = false;
             //}
-            if (checkTop && IsPrimarilyBlack(bitmap, 0.05f, 0.50f, xMargin, 64))
+            bool isTopBlack = checkTop && IsPrimarilyBlack(bitmap, 0.01f, 0.50f, xMargin, 64);
+            bool isBottomBlack = checkBottom && IsPrimarilyBlack(bitmap, 0.50f, 0.99f, xMargin, 64);
+            if (isTopBlack && isBottomBlack)
+            {
+                return "both";
+            }
+            else if (isTopBlack)
             {
                 Debug.WriteLine("** Found keyboard at top");
                 return "top";
             }
-            if (checkBottom && IsPrimarilyBlack(bitmap, 0.55f, 0.90f, xMargin, 64))
+            else if (isBottomBlack)
             {
                 Debug.WriteLine("** Found keyboard at bottom");
                 return "bottom";
