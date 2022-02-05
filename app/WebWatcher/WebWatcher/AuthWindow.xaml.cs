@@ -17,15 +17,18 @@ namespace WebWatcher
 {
     public class UserInfo
     {
+        public readonly string userId;
         public readonly string userEmail;
         public readonly string userGivenName;
         public readonly string userFamilyName;
         public readonly string refreshToken;
-        public UserInfo(string userEmail,
+        public UserInfo(string userId,
+                        string userEmail,
                         string userGivenName,
                         string userFamilyName,
                         string refreshToken)
         {
+            this.userId = userId;
             this.userEmail = userEmail;
             this.userGivenName = userGivenName;
             this.userFamilyName = userFamilyName;
@@ -321,6 +324,7 @@ namespace WebWatcher
             Dictionary<string, string> appDataObject =
                 JsonConvert.DeserializeObject<Dictionary<string, string>>(txt);
             return new UserInfo(
+                appDataObject["sub"],
                 appDataObject["user_email"],
                 appDataObject["user_given_name"],
                 appDataObject["user_family_name"],
@@ -363,6 +367,7 @@ namespace WebWatcher
             Dictionary<string, string> userInfo =
                 JsonConvert.DeserializeObject<Dictionary<string, string>>(userinfoResponseText);
             return new UserInfo(
+                userInfo["sub"],
                 userInfo["email"], 
                 userInfo["given_name"],
                 userInfo["family_name"],
