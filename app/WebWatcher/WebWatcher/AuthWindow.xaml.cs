@@ -305,6 +305,7 @@ namespace WebWatcher
             {
                 { "refresh_token", userInfo.refreshToken },
                 { "refresh_token_creation_timestamp", timestamp },
+                { "user_id", userInfo.userId },
                 { "user_email", userInfo.userEmail },
                 { "user_given_name", userInfo.userGivenName },
                 { "user_family_name", userInfo.userFamilyName },
@@ -324,7 +325,7 @@ namespace WebWatcher
             Dictionary<string, string> appDataObject =
                 JsonConvert.DeserializeObject<Dictionary<string, string>>(txt);
             return new UserInfo(
-                appDataObject["sub"],
+                appDataObject["user_id"],
                 appDataObject["user_email"],
                 appDataObject["user_given_name"],
                 appDataObject["user_family_name"],
