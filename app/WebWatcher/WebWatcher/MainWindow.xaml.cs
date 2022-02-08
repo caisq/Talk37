@@ -56,6 +56,13 @@ namespace WebWatcher
         }
     }
 
+    internal enum WindowVerticalPosition
+    {
+        UNDETERMINED,
+        TOP,
+        BOTTOM,
+        BOTH_TOP_AND_BOTTOM,
+    }
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -64,6 +71,8 @@ namespace WebWatcher
         private static string FOCUS_APP_NAME = "balabolka";
         private static double WINDOW_SIZE_HEIGHT_PADDING = 24.0;
         private static double WINDOW_SIZE_WIDTH_PADDING = 24.0;
+        // TODO(cais): DO NOT HARDCODE. Get from API instead.
+        private static double SCREEN_SCALE = 2.0;
         private AuthWindow authWindow;
         private static bool focusAppRunning;
         private static bool focusAppFocused;
@@ -102,29 +111,38 @@ namespace WebWatcher
         {            
             focusAppRunning = IsProcessRunning(FOCUS_APP_NAME);
             focusAppFocused = IsProcessFocused(FOCUS_APP_NAME);
-            string onScreenKeyboardPosition = InferOnScreenKeyboardPosition();
-            string selfWindowPosition = InferSelfWindowPosition();
-            // TODO(cais): Refine the logic.
-            //Debug.WriteLine($"keyboard={onScreenKeyboardPosition}; selfWindowPosition={selfWindowPosition}");
-            //if (onScreenKeyboardPosition == "top" && selfWindowPosition == "top")
-            //{
-            //    await Application.Current.Dispatcher.BeginInvoke(
-            //            System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
-            //            {
-            //                Top = 450;  // TODO(cais): Do not hardcode.
-            //                UpdateWindowGeometryInternal();
-            //            }));
-            //} else if (onScreenKeyboardPosition == "bottom" && selfWindowPosition == "bottom")
-            //{
-            //    await Application.Current.Dispatcher.BeginInvoke(
-            //            System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
-            //            {
-            //                Top = 40;  // TODO(cais): Do not hardcode.
-            //                UpdateWindowGeometryInternal();
-            //            }));
-            //}
+            DynamicallyPositionSelf();
         }
 
+        private async void DynamicallyPositionSelf()
+        {
+            WindowVerticalPosition onScreenKeyboardPosition = InferOnScreenKeyboardPosition();
+            WindowVerticalPosition selfWindowPosition = InferSelfWindowPosition();
+            // TODO(cais): Refine the logic.
+            Debug.WriteLine($"keyboard={onScreenKeyboardPosition}; selfWindowPosition={selfWindowPosition}");
+            if (onScreenKeyboardPosition == WindowVerticalPosition.TOP &&
+                selfWindowPosition == WindowVerticalPosition.TOP)
+            {
+                await Application.Current.Dispatcher.BeginInvoke(
+                        System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                        {
+                            Top = 450;  // TODO(cais): Do not hardcode.
+                            Debug.WriteLine("Moved self to bottom");  // DEBUG
+                            UpdateWindowGeometryInternal();
+                        }));
+            }
+            else if (onScreenKeyboardPosition == WindowVerticalPosition.BOTTOM &&
+                     selfWindowPosition == WindowVerticalPosition.BOTTOM)
+            {
+                await Application.Current.Dispatcher.BeginInvoke(
+                        System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                        {
+                            Top = 40;  // TODO(cais): Do not hardcode.
+                            Debug.WriteLine("Moved self to top");  // DEBUG
+                            UpdateWindowGeometryInternal();
+                        }));
+            }
+        }
         private static bool IsProcessRunning(string processName)
         {
             string lowerProcessName = processName.ToLower();
@@ -204,8 +222,10 @@ namespace WebWatcher
                         System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                         {
                             Debug.WriteLine($"Resizing window: h={height}; w={width}");
-                            this.Height = height + WINDOW_SIZE_HEIGHT_PADDING;
-                            this.Width = width + WINDOW_SIZE_WIDTH_PADDING;
+                            Height = height + WINDOW_SIZE_HEIGHT_PADDING;
+                            Width = width + WINDOW_SIZE_WIDTH_PADDING;
+                            // Under a minimized state, make the window always on top.
+                            Topmost = Height < 100;
                             UpdateWindowGeometryInternal();
                             TheBrowser.Focus();
                         }));
@@ -384,9 +404,7 @@ namespace WebWatcher
             return GetForegroundWindow() == hThisWindow;
         }
 
-        private static double SCREEN_SCALE = 2.0; // TODO(cais): DO NOT HARDCODE.
-
-        private string InferSelfWindowPosition()
+        private WindowVerticalPosition InferSelfWindowPosition()
         {
             int height = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height;
             if (windowTop != -1)
@@ -394,17 +412,17 @@ namespace WebWatcher
                 double windowMiddle = (windowTop + windowBottom) / 2;
                 if (windowMiddle < 0.5 * height / SCREEN_SCALE)
                 {
-                    return "top";
+                    return WindowVerticalPosition.TOP;
                 }
                 else
                 {
-                    return "bottom";
+                    return WindowVerticalPosition.BOTTOM;
                 }
             }
-            return null;
+            return WindowVerticalPosition.UNDETERMINED;
         }
 
-        private string InferOnScreenKeyboardPosition()
+        private WindowVerticalPosition InferOnScreenKeyboardPosition()
         {
             int width = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
             int height = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height;
@@ -418,32 +436,23 @@ namespace WebWatcher
             int xMargin = 64;
             bool checkTop = true;
             bool checkBottom = true;
-            //string selfPosition = InferSelfWindowPosition();
-            //if (selfPosition == "top")
-            //{
-            //    checkTop = false;
-            //} else if (selfPosition == "bottom")
-            //{
-            //    checkBottom = false;
-            //}
-            bool isTopBlack = checkTop && IsPrimarilyBlack(bitmap, 0.01f, 0.50f, xMargin, 64);
-            bool isBottomBlack = checkBottom && IsPrimarilyBlack(bitmap, 0.50f, 0.99f, xMargin, 64);
+            bool isTopBlack = checkTop && IsPrimarilyBlack(bitmap, 0.05f, 0.45f, xMargin, 64);
+            bool isBottomBlack = checkBottom && IsPrimarilyBlack(bitmap, 0.55f, 0.95f, xMargin, 64);
             if (isTopBlack && isBottomBlack)
             {
-                return "both";
+                return WindowVerticalPosition.BOTH_TOP_AND_BOTTOM;
             }
             else if (isTopBlack)
             {
-                Debug.WriteLine("** Found keyboard at top");
-                return "top";
+                return WindowVerticalPosition.TOP;
             }
             else if (isBottomBlack)
             {
                 Debug.WriteLine("** Found keyboard at bottom");
-                return "bottom";
+                return WindowVerticalPosition.BOTTOM;
             }
             // Screen height: 1824. Do not do this when self is on.
-            return null;
+            return WindowVerticalPosition.UNDETERMINED;
             // Bottom half criterion: From 950 to 1700: 75% or more of lines have > 0.5 blackRatio
             // Top half criterion: From 50 to 900: 75% or more of lines have > 0.5 blackRatio
         }
@@ -454,7 +463,7 @@ namespace WebWatcher
                                       int xMargin,
                                       int pixelThreshold)
         {
-            bool anyCyan = false;
+            int cyanPixelCount = 0;
             int minY = (int) (minYRatio * bitmap.Height);
             int maxY = (int) (maxYRatio * bitmap.Height);
             int minX = xMargin;
@@ -473,7 +482,7 @@ namespace WebWatcher
                     }
                     if (color.R == 0 && color.G == 255 && color.B == 255)
                     {
-                        anyCyan = true;
+                        cyanPixelCount++;
                     }
                 }
                 float blackRatio = (float) numBlackPixels / (maxX - minX);
@@ -482,9 +491,9 @@ namespace WebWatcher
                     numBlackRows++;
                 }
             }
-            if (anyCyan)
+            if (cyanPixelCount > 0)
             {
-                Debug.WriteLine($"Detected cyan! {minYRatio}");  // DEBUG
+                Debug.WriteLine($"Detected cyan! {minYRatio}: {cyanPixelCount}");  // DEBUG
                 return false;
             }
             return (float)numBlackRows / (maxY - minY) > 0.5;
