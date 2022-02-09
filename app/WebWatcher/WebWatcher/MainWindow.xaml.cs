@@ -433,12 +433,12 @@ namespace WebWatcher
                 System.Windows.Forms.Screen.PrimaryScreen.Bounds.Y,
                 0, 0, System.Windows.Forms.Screen.PrimaryScreen.Bounds.Size,
                 CopyPixelOperation.SourceCopy);
-            int xMargin = 8;
+            int xMargin = 64;
             int pixelThreshold = 36;
             bool checkTop = true;
             bool checkBottom = true;
-            bool isTopBlack = checkTop && IsPrimarilyBlack(bitmap, 0.05f, 0.45f, xMargin, pixelThreshold);
-            bool isBottomBlack = checkBottom && IsPrimarilyBlack(bitmap, 0.55f, 0.95f, xMargin, pixelThreshold);
+            bool isTopBlack = checkTop && IsPrimarilyBlack(bitmap, 0.10f, 0.40f, xMargin, pixelThreshold);
+            bool isBottomBlack = checkBottom && IsPrimarilyBlack(bitmap, 0.60f, 0.90f, xMargin, pixelThreshold);
             if (isTopBlack && isBottomBlack)
             {
                 return WindowVerticalPosition.BOTH_TOP_AND_BOTTOM;
@@ -482,7 +482,9 @@ namespace WebWatcher
                         numBlackPixels++;
                     }
                     //if (color.R == 0 && color.G == 255 && color.B == 255)
-                    if (color.R < 64 && color.G == color.B && color.G == 255 && color.B == 255)
+                    if (color.R < 100 &&
+                        Math.Abs(color.G - color.B) < 10 &&
+                        color.G > 120 && color.B > 120)
                     {
                         cyanPixelCount++;
                     }
@@ -493,7 +495,7 @@ namespace WebWatcher
                     numBlackRows++;
                 }
             }
-            if (cyanPixelCount > 10)  // TODO(cais): Do not hardcode threshold.
+            if (cyanPixelCount > 50)  // TODO(cais): Do not hardcode threshold.
             {
                 Debug.WriteLine($"Detected cyan! {minYRatio}: {cyanPixelCount}");  // DEBUG
                 return false;

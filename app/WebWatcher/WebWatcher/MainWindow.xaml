@@ -15,7 +15,7 @@
         Left="0"
         Top="40"
         Height="450" 
-        Width="1350"
+        Width="1300"
         Topmost="False"
         BorderBrush="Cyan"
         BorderThickness="1"
