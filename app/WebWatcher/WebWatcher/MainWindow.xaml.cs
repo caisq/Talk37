@@ -19,12 +19,18 @@ namespace WebWatcher
         private readonly Func<string, float[][], Task<int>> updateButtonBoxesCallback;
         private readonly Func<int[], Task<int>> keyInjectionsCallback;
         private readonly Func<double, double, Task<int>> windowResizeCallback;
+        private readonly Func<string, Task<int>> saveSettingsCallback;
+        private readonly Func<string> loadSettingsCallback;
         public BoundListener(Func<string, float[][], Task<int>> updateButtonBoxesCallback,
                              Func<int[], Task<int>> keyInjectionsCallback,
-                             Func<double, double, Task<int>> windowResizeCallback) {
+                             Func<double, double, Task<int>> windowResizeCallback,
+                             Func<string, Task<int>> saveSettingsCallback,
+                             Func<string> loadSettingsCallback) {
             this.updateButtonBoxesCallback = updateButtonBoxesCallback;
             this.keyInjectionsCallback = keyInjectionsCallback;
             this.windowResizeCallback = windowResizeCallback;
+            this.saveSettingsCallback = saveSettingsCallback;
+            this.loadSettingsCallback = loadSettingsCallback;
         }
 
         public void registerNewAccessToken(string accessToken)
@@ -45,14 +51,24 @@ namespace WebWatcher
         // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
         public void injectKeys(int[] vkCodes)
         {
-            this.keyInjectionsCallback(vkCodes);
+            keyInjectionsCallback(vkCodes);
         }
 
         // Requests resizing of window to the specified height and width
         // in pixels.
         public void resizeWindow(double height, double width)
         {
-            this.windowResizeCallback(height, width);
+            windowResizeCallback(height, width);
+        }
+
+        public void saveSettings(string serializedAppSettings)
+        {
+            saveSettingsCallback(serializedAppSettings);
+        }
+
+        public string loadSettings()
+        {
+            return loadSettingsCallback();
         }
     }
 
@@ -69,6 +85,7 @@ namespace WebWatcher
     public partial class MainWindow : Window
     {
         private static string FOCUS_APP_NAME = "balabolka";
+        private static string APP_SETTINGS_JSON_FILENAME = "app-settings.json";
         private static double WINDOW_SIZE_HEIGHT_PADDING = 24.0;
         private static double WINDOW_SIZE_WIDTH_PADDING = 24.0;
         // TODO(cais): DO NOT HARDCODE. Get from API instead.
@@ -211,7 +228,7 @@ namespace WebWatcher
                     keybd_event((byte)vkCode, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
                 }
                 this.injectingKeys = false;
-                // We don't focus back on the main window right away because we assuem the
+                // We don't focus back on the main window right away because we assume the
                 // user wants to keep typing in the other window. If we change out mind,
                 // use the following line of code.
                 //FocusOnMainWindowAndWebView(/* showWindow= */ false);
@@ -230,9 +247,35 @@ namespace WebWatcher
                             TheBrowser.Focus();
                         }));
                 return 0;
+            }, async (string serializedAppSettings) =>
+            {
+                try
+                {
+                    string appSettingsFilePath = GetAppSettingsFilePath();
+                    File.WriteAllText(appSettingsFilePath, serializedAppSettings);
+                    return 0;
+                }
+                catch (IOException exception)
+                {
+                    return 1;
+                }
+            }, () =>
+            {
+                try
+                {
+                    string appSettingsFilePath = GetAppSettingsFilePath();
+                    return File.ReadAllText(appSettingsFilePath).Trim();
+                }
+                catch (IOException exception)
+                {
+                    return null;
+                }
             });
             TheBrowser.JavascriptObjectRepository.Register(
                 "boundListener", listener, isAsync: true, options: BindingOptions.DefaultBinder);
+            // TODO(cais): Fix the bug where typing doesn't work after clicking Expand
+            // or switching to another tab. Is it because the focus shifted to another
+            // element?
 
             HideMainWindow();
             authWindow = new AuthWindow();
@@ -253,6 +296,18 @@ namespace WebWatcher
                         return 0;
                     });
             });
+        }
+
+        private string GetAppSettingsFilePath()
+        {
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string appName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+            string dirPath = Path.Combine(path, appName);
+            if (!File.Exists(dirPath))
+            {
+                _ = Directory.CreateDirectory(dirPath);
+            }
+            return Path.Combine(path, appName, APP_SETTINGS_JSON_FILENAME);
         }
 
         private void UpdateWindowGeometryInternal()
