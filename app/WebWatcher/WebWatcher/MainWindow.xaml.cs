@@ -203,6 +203,10 @@ namespace WebWatcher
                         System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                         {
                             AddGazeButtonsForComponent(componentName, boxes);
+                            // NOTE: This call deals with the issue wherein focus on the
+                            // web document in the CefSharp web view is sometimes lost after
+                            // a mouse click inside the web view.
+                            _ = TheBrowser.Focus();
                         }));
                 return 0;  // TODO(cais): Remove dummy return value.
             }, async (int[] vkCodes) =>
@@ -296,6 +300,10 @@ namespace WebWatcher
                         return 0;
                     });
             });
+        }
+        void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
 
         private string GetAppSettingsFilePath()
