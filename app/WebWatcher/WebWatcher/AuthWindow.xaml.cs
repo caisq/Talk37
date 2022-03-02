@@ -38,14 +38,15 @@ namespace WebWatcher
     public partial class AuthWindow : Window
     {
         private const string authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
-        private Func<string, Task<int>> newAccessTokenCallback;
+        // Arguments: access token, UserInfo.
+        private Func<string, UserInfo, Task<int>> newAccessTokenCallback;
         public AuthWindow()
         {
             InitializeComponent();
         }
 
         public async void TryGetAccessTokenUsingRefreshToken(
-            Func<string, Task<int>> newAccessTokenCallback)
+            Func<string, UserInfo, Task<int>> newAccessTokenCallback)
         {
             UserInfo userInfo = LoadUserInfo();
             if (userInfo == null)
@@ -76,12 +77,12 @@ namespace WebWatcher
             tokenRequest.Accept = "Accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
             byte[] _byteVersion = Encoding.ASCII.GetBytes(tokenRequestBody);
             tokenRequest.ContentLength = _byteVersion.Length;
-            Stream stream = tokenRequest.GetRequestStream();
-            await stream.WriteAsync(_byteVersion, 0, _byteVersion.Length);
-            stream.Close();
 
             try
             {
+                Stream stream = tokenRequest.GetRequestStream();
+                await stream.WriteAsync(_byteVersion, 0, _byteVersion.Length);
+                stream.Close();
                 // gets the response
                 WebResponse tokenResponse = await tokenRequest.GetResponseAsync();
                 using (StreamReader reader = new StreamReader(tokenResponse.GetResponseStream()))
@@ -96,32 +97,26 @@ namespace WebWatcher
 
                     string accessToken = tokenEndpointDecoded["access_token"];
                     Debug.WriteLine($"Access token from refresh token: {accessToken}");
-                    _ = await newAccessTokenCallback(accessToken);
+                    _ = await newAccessTokenCallback(accessToken, userInfo);
                 }
             }
             catch (WebException ex)
             {
-                if (ex.Status == WebExceptionStatus.ProtocolError)
-                {
-                    var response = ex.Response as HttpWebResponse;
-                    if (response != null)
+                System.Windows.Forms.MessageBox.Show(
+                    "Network error: Check your network connection.\n" + ex.ToString(),
+                    "Network error",
+                    System.Windows.Forms.MessageBoxButtons.OK,
+                    System.Windows.Forms.MessageBoxIcon.Error);
+                _ = Application.Current.Dispatcher.BeginInvoke(
+                    System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                     {
-                        Debug.WriteLine("HTTP: " + response.StatusCode);
-                        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                        {
-                            // reads response body
-                            string responseText = await reader.ReadToEndAsync();
-                            Debug.WriteLine(responseText);
-                        }
-                    }
-
-                }
-                ShowAndGetAccessToken(newAccessTokenCallback);
+                        Application.Current.Shutdown();
+                    }));
                 return;
             }
         }
 
-        private void ShowAndGetAccessToken(Func<string, Task<int>> newAccessTokenCallback)
+        private void ShowAndGetAccessToken(Func<string, UserInfo, Task<int>> newAccessTokenCallback)
         {
             this.newAccessTokenCallback = newAccessTokenCallback;
             Application.Current.Dispatcher.BeginInvoke(
@@ -273,27 +268,37 @@ namespace WebWatcher
                             {
                                 Hide();
                             }));
-                        _ = this.newAccessTokenCallback(accessToken);
+                        _ = this.newAccessTokenCallback(accessToken, userInfo);
                     }
                 }
             }
             catch (WebException ex)
             {
-                if (ex.Status == WebExceptionStatus.ProtocolError)
-                {
-                    HttpWebResponse response = ex.Response as HttpWebResponse;
-                    if (response != null)
+                System.Windows.Forms.MessageBox.Show(
+                    "Network error: Check your network connection.\n" + ex.ToString(),
+                    "Network error",
+                    System.Windows.Forms.MessageBoxButtons.OK,
+                    System.Windows.Forms.MessageBoxIcon.Error);
+                _ = Application.Current.Dispatcher.BeginInvoke(
+                    System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                     {
-                        Debug.WriteLine("HTTP: " + response.StatusCode);
-                        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                        {
-                            // reads response body
-                            string responseText = await reader.ReadToEndAsync();
-                            Debug.WriteLine(responseText);
-                        }
-                    }
-
-                }
+                        Application.Current.Shutdown();
+                    }));
+                //Application.Current.Shutdown();
+                //if (ex.Status == WebExceptionStatus.ProtocolError)
+                //{
+                //    HttpWebResponse response = ex.Response as HttpWebResponse;
+                //    if (response != null)
+                //    {
+                //        Debug.WriteLine("HTTP: " + response.StatusCode);
+                //        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                //        {
+                //            // reads response body
+                //            string responseText = await reader.ReadToEndAsync();
+                //            Debug.WriteLine(responseText);
+                //        }
+                //    }
+                //}
             }
         }
 

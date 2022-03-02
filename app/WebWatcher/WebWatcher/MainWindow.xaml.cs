@@ -21,16 +21,19 @@ namespace WebWatcher
         private readonly Func<double, double, Task<int>> windowResizeCallback;
         private readonly Func<string, Task<int>> saveSettingsCallback;
         private readonly Func<string> loadSettingsCallback;
+        private readonly Func<int> quitAppCallback;
         public BoundListener(Func<string, float[][], Task<int>> updateButtonBoxesCallback,
                              Func<int[], Task<int>> keyInjectionsCallback,
                              Func<double, double, Task<int>> windowResizeCallback,
                              Func<string, Task<int>> saveSettingsCallback,
-                             Func<string> loadSettingsCallback) {
+                             Func<string> loadSettingsCallback,
+                             Func<int> quitAppCallback) {
             this.updateButtonBoxesCallback = updateButtonBoxesCallback;
             this.keyInjectionsCallback = keyInjectionsCallback;
             this.windowResizeCallback = windowResizeCallback;
             this.saveSettingsCallback = saveSettingsCallback;
             this.loadSettingsCallback = loadSettingsCallback;
+            this.quitAppCallback = quitAppCallback;
         }
 
         public void registerNewAccessToken(string accessToken)
@@ -70,6 +73,11 @@ namespace WebWatcher
         {
             return loadSettingsCallback();
         }
+
+        public void requestQuitApp()
+        {
+            quitAppCallback();
+        }
     }
 
     internal enum WindowVerticalPosition
@@ -99,6 +107,7 @@ namespace WebWatcher
             new Dictionary<string, HashSet<string>>();
         private readonly KeyLogger keyLogger;
         private readonly System.Threading.Timer timer;
+        private readonly System.Threading.Timer positioningTimer;
         private CefSharp.DevTools.DevToolsClient devToolsClient;
         private volatile bool injectingKeys = false;
         private const UInt32 KEYEVENTF_EXTENDEDKEY = 0x0001;
@@ -111,6 +120,8 @@ namespace WebWatcher
             keyLogger = new KeyLogger(KeyboardHookHandler);
             timer = new System.Threading.Timer(TimerTick);
             timer.Change(0, 2 * 1000);
+            positioningTimer = new System.Threading.Timer(PositioningTimerTick);
+            positioningTimer.Change(0, 5 * 1000);
         }
 
         private void KeyboardHookHandler(int vkCode)
@@ -125,10 +136,14 @@ namespace WebWatcher
         }
 
         public async void TimerTick(object state)
-        {            
+        {
             focusAppRunning = IsProcessRunning(FOCUS_APP_NAME);
             focusAppFocused = IsProcessFocused(FOCUS_APP_NAME);
-            DynamicallyPositionSelf();
+        }
+
+        public async void PositioningTimerTick(object state)
+        {
+            //DynamicallyPositionSelf();
         }
 
         private async void DynamicallyPositionSelf()
@@ -274,6 +289,14 @@ namespace WebWatcher
                 {
                     return null;
                 }
+            }, () =>
+            {
+                Application.Current.Dispatcher.BeginInvoke(
+                    System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                    {
+                        Application.Current.Shutdown();
+                    }));
+                return 0;
             });
             TheBrowser.JavascriptObjectRepository.Register(
                 "boundListener", listener, isAsync: true, options: BindingOptions.DefaultBinder);
@@ -285,12 +308,14 @@ namespace WebWatcher
             authWindow = new AuthWindow();
             Task.Run(async () => {
                 authWindow.TryGetAccessTokenUsingRefreshToken(
-                    async (string accessToken) =>
+                    async (string accessToken, UserInfo userInfo) =>
                     {
                         string webViewUrlTemplate = Environment.GetEnvironmentVariable(
                             "SPEAKFASTER_WEBVIEW_URL_WITH_ACCESS_TOKEN_TEMPLATE");
                         Debug.Assert(webViewUrlTemplate != null && webViewUrlTemplate != "");
-                        string webViewUrl = webViewUrlTemplate.Replace("{access_token}", accessToken);
+                        string webViewUrl = webViewUrlTemplate.Replace("${access_token}", accessToken);
+                        webViewUrl = webViewUrl.Replace("${user_email}", userInfo.userEmail);
+                        webViewUrl = webViewUrl.Replace("${user_given_name}", userInfo.userGivenName);
                         TheBrowser.Load(webViewUrl);
                         TheBrowser.ExecuteScriptAsyncWhenPageLoaded(
                             "document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
@@ -496,7 +521,7 @@ namespace WebWatcher
                 System.Windows.Forms.Screen.PrimaryScreen.Bounds.Y,
                 0, 0, System.Windows.Forms.Screen.PrimaryScreen.Bounds.Size,
                 CopyPixelOperation.SourceCopy);
-            int xMargin = 64;
+            int xMargin = 150;
             int pixelThreshold = 36;
             bool checkTop = true;
             bool checkBottom = true;
