@@ -99,6 +99,7 @@ namespace WebWatcher
         // TODO(cais): DO NOT HARDCODE. Get from API instead.
         private static double SCREEN_SCALE = 2.0;
         private AuthWindow authWindow;
+        private int accessTokenCount = 0;
         private static bool focusAppRunning;
         private static bool focusAppFocused;
         private static IntPtr focusAppHandle = new IntPtr(-1);
@@ -310,18 +311,29 @@ namespace WebWatcher
                 authWindow.TryGetAccessTokenUsingRefreshToken(
                     async (string accessToken, UserInfo userInfo) =>
                     {
-                        string webViewUrlTemplate = Environment.GetEnvironmentVariable(
-                            "SPEAKFASTER_WEBVIEW_URL_WITH_ACCESS_TOKEN_TEMPLATE");
-                        Debug.Assert(webViewUrlTemplate != null && webViewUrlTemplate != "");
-                        string webViewUrl = webViewUrlTemplate.Replace("${access_token}", accessToken);
-                        webViewUrl = webViewUrl.Replace("${user_email}", userInfo.userEmail);
-                        webViewUrl = webViewUrl.Replace("${user_given_name}", userInfo.userGivenName);
-                        TheBrowser.Load(webViewUrl);
-                        TheBrowser.ExecuteScriptAsyncWhenPageLoaded(
-                            "document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
-                        // After navigating to the destination URL, auto-focus on this window and
-                        // the web view.
-                        FocusOnMainWindowAndWebView(/* showWindow= */ true);
+                        if (accessTokenCount == 0)
+                        {
+                            string webViewUrlTemplate = Environment.GetEnvironmentVariable(
+                                "SPEAKFASTER_WEBVIEW_URL_WITH_ACCESS_TOKEN_TEMPLATE");
+                            Debug.Assert(webViewUrlTemplate != null && webViewUrlTemplate != "");
+                            string webViewUrl = webViewUrlTemplate.Replace("${access_token}", accessToken);
+                            webViewUrl = webViewUrl.Replace("${user_email}", userInfo.userEmail);
+                            webViewUrl = webViewUrl.Replace("${user_given_name}", userInfo.userGivenName);
+                            TheBrowser.Load(webViewUrl);
+                            TheBrowser.ExecuteScriptAsyncWhenPageLoaded(
+                                "document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
+                            authWindow.StartPeriodicRefreshTokenPoll();
+                            // After navigating to the destination URL, auto-focus on this window and
+                            // the web view.
+                            FocusOnMainWindowAndWebView(/* showWindow= */ true);
+                        } 
+                        else
+                        {
+                            Debug.WriteLine(
+                                $"Received new access token (#{accessTokenCount}): {accessToken}");
+                            TheBrowser.ExecuteScriptAsync($"window.externalAccessTokenHook('{accessToken}')");
+                        }
+                        accessTokenCount++;
                         return 0;
                     });
             });

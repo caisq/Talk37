@@ -38,6 +38,10 @@ namespace WebWatcher
     public partial class AuthWindow : Window
     {
         private const string authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
+        private const int DEFAULT_APPLY_REFRESH_TOKEN_PERIOD_MILLIS = 30 * 60 * 1000;
+        private System.Threading.Timer refreshTokenTimer;
+        private int applyRefreshTokenPeriodMillis = DEFAULT_APPLY_REFRESH_TOKEN_PERIOD_MILLIS;
+
         // Arguments: access token, UserInfo.
         private Func<string, UserInfo, Task<int>> newAccessTokenCallback;
         public AuthWindow()
@@ -48,6 +52,7 @@ namespace WebWatcher
         public async void TryGetAccessTokenUsingRefreshToken(
             Func<string, UserInfo, Task<int>> newAccessTokenCallback)
         {
+            this.newAccessTokenCallback = newAccessTokenCallback;
             UserInfo userInfo = LoadUserInfo();
             if (userInfo == null)
             {
@@ -61,6 +66,21 @@ namespace WebWatcher
                 return;
             }
 
+            string accessToken = await ConvertRefreshTokenToAccessToken(refreshToken);
+            _ = await newAccessTokenCallback(accessToken, userInfo);
+        }
+
+        public void StartPeriodicRefreshTokenPoll()
+        {
+            refreshTokenTimer = new System.Threading.Timer(TryApplyRefreshToken);
+            refreshTokenTimer.Change(
+                applyRefreshTokenPeriodMillis, applyRefreshTokenPeriodMillis);
+            Debug.WriteLine(
+                $"Started periodic poll with refresh token: {applyRefreshTokenPeriodMillis} ms");
+        }
+
+        private async Task<string> ConvertRefreshTokenToAccessToken(string refreshToken)
+        {
             string clientId = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_CLIENT_ID");
             string clientSecret = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_CLIENT_SECRET");
             // TODO(cais): Refactor into helper method.
@@ -94,10 +114,18 @@ namespace WebWatcher
                     // converts to dictionary
                     Dictionary<string, string> tokenEndpointDecoded =
                         JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
-
-                    string accessToken = tokenEndpointDecoded["access_token"];
-                    Debug.WriteLine($"Access token from refresh token: {accessToken}");
-                    _ = await newAccessTokenCallback(accessToken, userInfo);
+                    if (tokenEndpointDecoded.ContainsKey("expires_in"))
+                    {
+                        int expiresInSeconds = 0;
+                        int.TryParse(tokenEndpointDecoded["expires_in"], out expiresInSeconds);
+                        // Subtract a safety margin.
+                        int expiresInMillis = (int)(expiresInSeconds - 5) * 1000;
+                        if (expiresInMillis > 0 && expiresInMillis > applyRefreshTokenPeriodMillis)
+                        {
+                            this.applyRefreshTokenPeriodMillis = expiresInMillis;
+                        }
+                    }
+                    return tokenEndpointDecoded["access_token"];
                 }
             }
             catch (WebException ex)
@@ -112,8 +140,30 @@ namespace WebWatcher
                     {
                         Application.Current.Shutdown();
                     }));
+                return null;
+            }
+        }
+
+        public async void TryApplyRefreshToken(object state)
+        {
+            if (newAccessTokenCallback == null)
+            {
                 return;
             }
+            UserInfo userInfo = LoadUserInfo();
+            if (userInfo == null)
+            {
+                Debug.WriteLine("Cannot apply refresh token because user info is null");
+                return;
+            }
+            string refreshToken = userInfo.refreshToken;
+            if (refreshToken == null || refreshToken == "")
+            {
+                return;
+            }
+            Debug.WriteLine("Applying refresh token");
+            string accessToken = await ConvertRefreshTokenToAccessToken(refreshToken);
+            _ = newAccessTokenCallback(accessToken, userInfo);
         }
 
         private void ShowAndGetAccessToken(Func<string, UserInfo, Task<int>> newAccessTokenCallback)
@@ -284,21 +334,6 @@ namespace WebWatcher
                     {
                         Application.Current.Shutdown();
                     }));
-                //Application.Current.Shutdown();
-                //if (ex.Status == WebExceptionStatus.ProtocolError)
-                //{
-                //    HttpWebResponse response = ex.Response as HttpWebResponse;
-                //    if (response != null)
-                //    {
-                //        Debug.WriteLine("HTTP: " + response.StatusCode);
-                //        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                //        {
-                //            // reads response body
-                //            string responseText = await reader.ReadToEndAsync();
-                //            Debug.WriteLine(responseText);
-                //        }
-                //    }
-                //}
             }
         }
 
