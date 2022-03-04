@@ -262,10 +262,11 @@ namespace WebWatcher
                     keybd_event((byte)vkCode, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
                 }
                 this.injectingKeys = false;
-                // We don't focus back on the main window right away because we assume the
-                // user wants to keep typing in the other window. If we change out mind,
-                // use the following line of code.
-                //FocusOnMainWindowAndWebView(/* showWindow= */ false);
+                // Focus back on the main app after key injection.s
+                if (!toSelfApp)
+                {
+                    FocusOnMainWindowAndWebView(/* showWindow= */ false);
+                }
                 return 0;
             }, async (double height, double width) =>
             {
@@ -278,6 +279,7 @@ namespace WebWatcher
                             // Under a minimized state, make the window always on top.
                             Topmost = Height < 100;
                             UpdateWindowGeometryInternal();
+                            FocusOnMainWindowAndWebView(/* showWindow= */ false);
                             TheBrowser.Focus();
                         }));
                 return 0;
