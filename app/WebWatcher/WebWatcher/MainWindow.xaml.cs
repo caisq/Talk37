@@ -17,13 +17,13 @@ namespace WebWatcher
     class BoundListener
     {
         private readonly Func<string, float[][], Task<int>> updateButtonBoxesCallback;
-        private readonly Func<int[], Task<int>> keyInjectionsCallback;
+        private readonly Func<int[], bool, Task<int>> keyInjectionsCallback;
         private readonly Func<double, double, Task<int>> windowResizeCallback;
         private readonly Func<string, Task<int>> saveSettingsCallback;
         private readonly Func<string> loadSettingsCallback;
         private readonly Func<int> quitAppCallback;
         public BoundListener(Func<string, float[][], Task<int>> updateButtonBoxesCallback,
-                             Func<int[], Task<int>> keyInjectionsCallback,
+                             Func<int[], bool, Task<int>> keyInjectionsCallback,
                              Func<double, double, Task<int>> windowResizeCallback,
                              Func<string, Task<int>> saveSettingsCallback,
                              Func<string> loadSettingsCallback,
@@ -52,9 +52,9 @@ namespace WebWatcher
         }
 
         // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
-        public void injectKeys(int[] vkCodes)
+        public void injectKeys(int[] vkCodes, bool toSelfApp)
         {
-            keyInjectionsCallback(vkCodes);
+            keyInjectionsCallback(vkCodes, toSelfApp);
         }
 
         // Requests resizing of window to the specified height and width
@@ -92,7 +92,7 @@ namespace WebWatcher
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static string FOCUS_APP_NAME = "balabolka";
+        private static string FOCUS_APP_NAME = "balabolka";  // TODO(cais): Dehack.
         private static string APP_SETTINGS_JSON_FILENAME = "app-settings.json";
         private static double WINDOW_SIZE_HEIGHT_PADDING = 24.0;
         private static double WINDOW_SIZE_WIDTH_PADDING = 24.0;
@@ -225,9 +225,9 @@ namespace WebWatcher
                             _ = TheBrowser.Focus();
                         }));
                 return 0;  // TODO(cais): Remove dummy return value.
-            }, async (int[] vkCodes) =>
+            }, async (int[] vkCodes, bool toSelfApp) =>
             {
-                if (!focusAppRunning || focusAppHandle.ToInt32() <= 0)
+                if (!toSelfApp && (!focusAppRunning || focusAppHandle.ToInt32() <= 0))
                 {
                     FocusOnMainWindowAndWebView(/* showWindow= */ false);
                     return 1;
@@ -236,7 +236,21 @@ namespace WebWatcher
                 {
                     return 1;
                 }
-                SetForegroundWindow(focusAppHandle);
+                if (toSelfApp)
+                {
+                    // This is a trick to cause the keyboard to reset:
+                    // briefly hide and then show window. This flickers
+                    // the app window slightly, which is a slight downside.
+                    // NOTE: Turns out that you can simply hide and show
+                    // the window to refresh the soft keyboard state. Injecting
+                    // the Space key afterwards is optional.
+                    HideMainWindow();
+                    FocusOnMainWindowAndWebView(/* showWindow= */ true);
+                }
+                else
+                {
+                    SetForegroundWindow(focusAppHandle);
+                }
                 this.injectingKeys = true;
                 foreach (var vkCode in vkCodes)
                 {
