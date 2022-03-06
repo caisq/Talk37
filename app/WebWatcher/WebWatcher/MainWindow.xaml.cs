@@ -108,6 +108,7 @@ namespace WebWatcher
         // TODO(cais): DO NOT HARDCODE. Get from API instead.
         private static double SCREEN_SCALE = 2.0;
         private AuthWindow authWindow;
+        private RepositionWindow repositionWindow;
         private int accessTokenCount = 0;
         private static bool focusAppRunning;
         private static bool focusAppFocused;
@@ -279,8 +280,6 @@ namespace WebWatcher
                             Debug.WriteLine($"Resizing window: h={height}; w={width}");
                             Height = height + WINDOW_SIZE_HEIGHT_PADDING;
                             Width = width + WINDOW_SIZE_WIDTH_PADDING;
-                            // Under a minimized state, make the window always on top.
-                            Topmost = Height < 100;
                             UpdateWindowGeometryInternal();
                             FocusOnMainWindowAndWebView(/* showWindow= */ false);
                             TheBrowser.Focus();
@@ -356,6 +355,29 @@ namespace WebWatcher
                         return 0;
                     });
             });
+
+            // Show the repoisitioning window.
+            repositionWindow = new RepositionWindow();
+            repositionWindow.RegisterWindowVerticalPositionChangeCallback(
+                (WindowVerticalPosition position) =>
+                {
+                    Debug.WriteLine($"Changing window position to: {position}");
+                    switch (position)
+                    {
+                        case WindowVerticalPosition.TOP:
+                            Top = RepositionWindow.MAIN_WINDOW_TOP_TOP_VALUE;
+                            UpdateWindowGeometryInternal();
+                            break;
+                        case WindowVerticalPosition.BOTTOM:
+                            Top = RepositionWindow.MAIN_WINDOW_BOTTOM_TOP_VALUE;
+                            UpdateWindowGeometryInternal();
+                            break;
+                        default:
+                            break;
+                    }
+                    return 0;
+                });
+            repositionWindow.Show();
         }
         void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

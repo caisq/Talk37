@@ -177,10 +177,6 @@ namespace WebWatcher
                 }));
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-
-        }
         private async void button_Click(object sender, RoutedEventArgs e)
         {
             PerformSignIn();

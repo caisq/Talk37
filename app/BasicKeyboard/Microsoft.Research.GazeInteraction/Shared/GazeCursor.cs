@@ -96,21 +96,28 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
         }
 #else
         internal UIElement GetHitElement(double x, double y)
-        {
-            UIElement element;
+        { 
 
             var gazePointD = new Point(x, y);
-            var window = Application.Current.MainWindow;
-            if (window != null)
+            WindowCollection windows = Application.Current.Windows;
+            foreach (Window window in windows)
             {
-                var pointFromScreen = window.PointFromScreen(new Point(x, y));
-                var hitTestParameters = new PointHitTestParameters(pointFromScreen);
-                element = null;
-                var pointHit = new Point();
+                //System.Diagnostics.Debug.WriteLine($"Testing: {window}: {i} of {windows.Count}: {window.IsVisible}, {window.IsActive}");  // DEBUG
+                // TODO(cais): We could prevent non-IsActive window from firing 
+                // gaze-click events (!window.IsActive).
+                if (window == null || !window.IsVisible)
+                {
+                    continue;
+                }
+
+                Point pointFromScreen = window.PointFromScreen(new Point(x, y));
+                PointHitTestParameters hitTestParameters = new PointHitTestParameters(pointFromScreen);
+                Point pointHit = new Point();
+                UIElement element = null;
                 VisualTreeHelper.HitTest(window, null, OnResultCallback, hitTestParameters);
 
                 HitTestResultBehavior OnResultCallback(HitTestResult result)
-                { 
+                {
                     HitTestResultBehavior value;
 
                     if (result is PointHitTestResult hitTestResult &&
@@ -118,7 +125,6 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
                         elementHit.IsHitTestVisible)
                     {
                         element = elementHit;
-                        //System.Diagnostics.Debug.WriteLine($"element hit: {element.GetType()}"); // DEBUG
                         pointHit = hitTestResult.PointHit;
                         value = HitTestResultBehavior.Stop;
                     }
@@ -129,13 +135,13 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
 
                     return value;
                 }
-            }
-            else
-            {
-                element = null;
-            }
 
-            return element;
+                if (element != null)
+                {
+                    return element;
+                }
+            }
+            return null;
         }
 #endif
 
@@ -288,7 +294,7 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
             _gazePopup = new Popup
             {
                 IsHitTestVisible = false,
-                Child = DefaultCursor
+                Child = DefaultCursor,
             };
         }
 

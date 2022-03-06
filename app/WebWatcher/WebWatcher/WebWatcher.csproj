@@ -117,6 +117,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="RepositionWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="AuthWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -128,6 +132,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RepositionWindow.xaml.cs">
+      <DependentUpon>RepositionWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="BrowserSubTargetItem.cs" />
     <Compile Include="BrowserTargetItem.cs" />
@@ -179,6 +186,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="assets\move_down_48px.png" />
     <Resource Include="speakfaster.ico" />
     <Resource Include="assets\speakfaster.ico" />
     <Resource Include="assets\g-logo.png" />
