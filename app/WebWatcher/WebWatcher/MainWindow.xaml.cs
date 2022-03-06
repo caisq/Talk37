@@ -17,19 +17,22 @@ namespace WebWatcher
     class BoundListener
     {
         private readonly Func<string, float[][], Task<int>> updateButtonBoxesCallback;
-        private readonly Func<int[], bool, Task<int>> keyInjectionsCallback;
+        private readonly Func<int[], Task<int>> keyInjectionsCallback;
+        private readonly Func<Task<int>> requestSoftKeyboardResetCallback;
         private readonly Func<double, double, Task<int>> windowResizeCallback;
         private readonly Func<string, Task<int>> saveSettingsCallback;
         private readonly Func<string> loadSettingsCallback;
         private readonly Func<int> quitAppCallback;
         public BoundListener(Func<string, float[][], Task<int>> updateButtonBoxesCallback,
-                             Func<int[], bool, Task<int>> keyInjectionsCallback,
+                             Func<int[], Task<int>> keyInjectionsCallback,
+                             Func<Task<int>> requestSoftKeyboardResetCallback,
                              Func<double, double, Task<int>> windowResizeCallback,
                              Func<string, Task<int>> saveSettingsCallback,
                              Func<string> loadSettingsCallback,
                              Func<int> quitAppCallback) {
             this.updateButtonBoxesCallback = updateButtonBoxesCallback;
             this.keyInjectionsCallback = keyInjectionsCallback;
+            this.requestSoftKeyboardResetCallback = requestSoftKeyboardResetCallback;
             this.windowResizeCallback = windowResizeCallback;
             this.saveSettingsCallback = saveSettingsCallback;
             this.loadSettingsCallback = loadSettingsCallback;
@@ -52,9 +55,15 @@ namespace WebWatcher
         }
 
         // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
-        public void injectKeys(int[] vkCodes, bool toSelfApp)
+        public void injectKeys(int[] vkCodes)
         {
-            keyInjectionsCallback(vkCodes, toSelfApp);
+            keyInjectionsCallback(vkCodes);
+        }
+
+        // Request host app to reset the state of the softkeyboard attached to it.
+        public void requestSoftKeyboardReset()
+        {
+            requestSoftKeyboardResetCallback();
         }
 
         // Requests resizing of window to the specified height and width
@@ -225,33 +234,22 @@ namespace WebWatcher
                             _ = TheBrowser.Focus();
                         }));
                 return 0;  // TODO(cais): Remove dummy return value.
-            }, async (int[] vkCodes, bool toSelfApp) =>
+            }, async (int[] vkCodes) =>
             {
-                if (!toSelfApp && (!focusAppRunning || focusAppHandle.ToInt32() <= 0))
+                if (!focusAppRunning || focusAppHandle.ToInt32() <= 0)
                 {
                     FocusOnMainWindowAndWebView(/* showWindow= */ false);
-                    return 1;
+                    return 0;
                 }
                 if (vkCodes.Length == 0)
                 {
-                    return 1;
-                }
-                if (toSelfApp)
-                {
-                    // This is a trick to cause the keyboard to reset:
-                    // briefly hide and then show window. This flickers
-                    // the app window slightly, which is a slight downside.
-                    // NOTE: Turns out that you can simply hide and show
-                    // the window to refresh the soft keyboard state. Injecting
-                    // the Space key afterwards is optional.
-                    HideMainWindow();
-                    FocusOnMainWindowAndWebView(/* showWindow= */ true);
+                    return 0;
                 }
                 else
                 {
                     SetForegroundWindow(focusAppHandle);
                 }
-                this.injectingKeys = true;
+                injectingKeys = true;
                 foreach (var vkCode in vkCodes)
                 {
                     // TODO(cais): Check vkCode is not out of bound. Else, throw an error.
@@ -261,12 +259,17 @@ namespace WebWatcher
                     await Task.Delay(1);
                     keybd_event((byte)vkCode, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
                 }
-                this.injectingKeys = false;
-                // Focus back on the main app after key injection.s
-                if (!toSelfApp)
-                {
-                    FocusOnMainWindowAndWebView(/* showWindow= */ false);
-                }
+                injectingKeys = false;
+                // Focus back on the main app after key injection.
+                FocusOnMainWindowAndWebView(/* showWindow= */ false);
+                return 0;
+            }, async () =>
+            {
+                // This is a trick to cause the keyboard to reset:
+                // briefly hide and then show window. This flickers
+                // the app window slightly, which is a slight downside.
+                HideMainWindow();
+                FocusOnMainWindowAndWebView(/* showWindow= */ true);
                 return 0;
             }, async (double height, double width) =>
             {
