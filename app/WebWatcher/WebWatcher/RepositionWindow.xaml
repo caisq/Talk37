@@ -17,10 +17,10 @@
         Topmost="True"
         Loaded="Window_Loaded">
     <Grid>
-        <Button x:Name="button"
+        <Button x:Name="moveButton"
                 FontSize="28"
                 HorizontalAlignment="Left"
-                Margin="0,0,0,0" 
+                Margin="-4,-4,0,0" 
                 VerticalAlignment="Top"
                 Width="72"
                 Height="72"
@@ -28,9 +28,10 @@
                 Click="Button_Click"
                 Padding="0">
             <Image 
+                    x:Name="buttonImage"
                     Height="48"
                     Width="48"
-                    Source="Assets/move_down_48px.png"
+                    Source="Assets/move_down_48dp.png"
                     Stretch="Fill"
                     Margin="0,0,0,0" />
         </Button>

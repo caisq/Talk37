@@ -1,14 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.Net;
-using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace WebWatcher
 {
@@ -42,10 +36,12 @@ namespace WebWatcher
                 case WindowVerticalPosition.TOP:
                     currentWindowVerticalPosition = WindowVerticalPosition.BOTTOM;
                     Top = REPOSITION_WINDOW_TOP_TOP_VALUE;
+                    buttonImage.Source = new BitmapImage(new Uri("/Assets/move_up_48dp.png", UriKind.Relative));
                     break;
                 case WindowVerticalPosition.BOTTOM:
                     currentWindowVerticalPosition = WindowVerticalPosition.TOP;
                     Top = REPOSITION_WINDOW_BOTTOM_TOP_VALUE;
+                    buttonImage.Source = new BitmapImage(new Uri("/Assets/move_down_48dp.png", UriKind.Relative));
                     break;
                 default:
                     break;

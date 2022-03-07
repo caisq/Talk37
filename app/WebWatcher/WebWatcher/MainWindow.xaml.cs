@@ -367,10 +367,12 @@ namespace WebWatcher
                         case WindowVerticalPosition.TOP:
                             Top = RepositionWindow.MAIN_WINDOW_TOP_TOP_VALUE;
                             UpdateWindowGeometryInternal();
+                            FocusOnMainWindowAndWebView(/* showWindow= */ false);
                             break;
                         case WindowVerticalPosition.BOTTOM:
                             Top = RepositionWindow.MAIN_WINDOW_BOTTOM_TOP_VALUE;
                             UpdateWindowGeometryInternal();
+                            FocusOnMainWindowAndWebView(/* showWindow= */ false);
                             break;
                         default:
                             break;

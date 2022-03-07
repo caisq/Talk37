@@ -102,7 +102,6 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
             WindowCollection windows = Application.Current.Windows;
             foreach (Window window in windows)
             {
-                //System.Diagnostics.Debug.WriteLine($"Testing: {window}: {i} of {windows.Count}: {window.IsVisible}, {window.IsActive}");  // DEBUG
                 // TODO(cais): We could prevent non-IsActive window from firing 
                 // gaze-click events (!window.IsActive).
                 if (window == null || !window.IsVisible)

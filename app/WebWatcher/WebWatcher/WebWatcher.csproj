@@ -186,7 +186,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="assets\move_down_48px.png" />
+    <Resource Include="assets\move_up_48dp.png" />
+    <Resource Include="assets\move_down_48dp.png" />
     <Resource Include="speakfaster.ico" />
     <Resource Include="assets\speakfaster.ico" />
     <Resource Include="assets\g-logo.png" />
