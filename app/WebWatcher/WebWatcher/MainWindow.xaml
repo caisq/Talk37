@@ -20,6 +20,8 @@
         BorderBrush="Cyan"
         BorderThickness="1"
         Loaded="Window_Loaded"
+        Activated="Window_Activated"
+        Deactivated="Window_Deactivated"
         Closing="Window_Closing">
     <Grid>
         <cef:ChromiumWebBrowser x:Name="TheBrowser" />

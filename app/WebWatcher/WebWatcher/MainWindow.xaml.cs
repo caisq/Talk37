@@ -142,7 +142,7 @@ namespace WebWatcher
                 return;
             }
             // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
-            Debug.WriteLine($"Key in focus app: {vkCode}, {(char) vkCode}");  // DEBUG
+            Debug.WriteLine($"Key in focus app: {vkCode}, {(char)vkCode}");  // DEBUG
             TheBrowser.ExecuteScriptAsync($"window.externalKeypressHook({vkCode})");
         }
 
@@ -337,6 +337,7 @@ namespace WebWatcher
                             string webViewUrl = webViewUrlTemplate.Replace("${access_token}", accessToken);
                             webViewUrl = webViewUrl.Replace("${user_email}", userInfo.userEmail);
                             webViewUrl = webViewUrl.Replace("${user_given_name}", userInfo.userGivenName);
+                            Debug.WriteLine($"WebView is using URL: {webViewUrl}");
                             TheBrowser.Load(webViewUrl);
                             TheBrowser.ExecuteScriptAsyncWhenPageLoaded(
                                 "document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
@@ -344,7 +345,7 @@ namespace WebWatcher
                             // After navigating to the destination URL, auto-focus on this window and
                             // the web view.
                             FocusOnMainWindowAndWebView(/* showWindow= */ true);
-                        } 
+                        }
                         else
                         {
                             Debug.WriteLine(
@@ -381,6 +382,25 @@ namespace WebWatcher
                 });
             repositionWindow.Show();
         }
+
+        void Window_Activated(object sender, EventArgs e)
+        {
+            if (TheBrowser == null)
+            {
+                return;
+            }
+            TheBrowser.ExecuteScriptAsync($"window.setHostWindowFocus(true)");
+        }
+
+        void Window_Deactivated(object sender, EventArgs e)
+        {
+            if (TheBrowser == null)
+            {
+                return;
+            }
+            TheBrowser.ExecuteScriptAsync($"window.setHostWindowFocus(false)");
+        }
+
         void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Application.Current.Shutdown();
@@ -649,5 +669,6 @@ namespace WebWatcher
             }
             return (float)numBlackRows / (maxY - minY) > 0.5;
         }
+
     }
 }
