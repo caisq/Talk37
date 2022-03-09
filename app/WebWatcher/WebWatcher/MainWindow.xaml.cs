@@ -337,6 +337,7 @@ namespace WebWatcher
                             string webViewUrl = webViewUrlTemplate.Replace("${access_token}", accessToken);
                             webViewUrl = webViewUrl.Replace("${user_email}", userInfo.userEmail);
                             webViewUrl = webViewUrl.Replace("${user_given_name}", userInfo.userGivenName);
+                            Debug.WriteLine($"URL for web view: {webViewUrl}");
                             TheBrowser.Load(webViewUrl);
                             TheBrowser.ExecuteScriptAsyncWhenPageLoaded(
                                 "document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
