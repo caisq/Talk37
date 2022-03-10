@@ -16,7 +16,7 @@
         Top="40"
         Height="450" 
         Width="1300"
-        Topmost="False"
+        Topmost="True"
         BorderBrush="Cyan"
         BorderThickness="1"
         Loaded="Window_Loaded"
