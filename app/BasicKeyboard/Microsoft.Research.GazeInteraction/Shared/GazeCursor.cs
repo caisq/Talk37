@@ -104,7 +104,7 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
             {
                 // TODO(cais): We could prevent non-IsActive window from firing 
                 // gaze-click events (!window.IsActive).
-                if (window == null || !window.IsVisible)
+                if (window == null || !window.IsVisible || !(window.IsActive || window.Topmost))
                 {
                     continue;
                 }
