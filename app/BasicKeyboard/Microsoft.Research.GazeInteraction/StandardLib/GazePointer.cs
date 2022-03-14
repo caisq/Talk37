@@ -216,7 +216,8 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
             _source.EyesOff += OnEyesOff;
 
             // Default to not filtering sample data
-            Filter = new NullFilter();
+            //Filter = new NullFilter();
+            Filter = new OneEuroFilter();
 
             // provide a default of GAZE_IDLE_TIME microseconds to fire eyes off
             EyesOffDelay = GAZE_IDLE_TIME;
