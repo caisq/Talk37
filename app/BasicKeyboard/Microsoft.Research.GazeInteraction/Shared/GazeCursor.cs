@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 #if WINDOWS_UWP
 using System.Linq;
 using Windows.Foundation;
@@ -95,6 +96,7 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
             return element;
         }
 #else
+        private static double HIT_TEST_RADIUS = 20.0;
         internal UIElement GetHitElement(double x, double y)
         { 
 
@@ -102,37 +104,33 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
             WindowCollection windows = Application.Current.Windows;
             foreach (Window window in windows)
             {
-                // TODO(cais): We could prevent non-IsActive window from firing 
-                // gaze-click events (!window.IsActive).
                 if (window == null || !window.IsVisible || !(window.IsActive || window.Topmost))
                 {
                     continue;
                 }
 
                 Point pointFromScreen = window.PointFromScreen(new Point(x, y));
-                PointHitTestParameters hitTestParameters = new PointHitTestParameters(pointFromScreen);
-                Point pointHit = new Point();
+                GeometryHitTestParameters geometryHitParameters = new GeometryHitTestParameters(
+                    new EllipseGeometry(pointFromScreen, HIT_TEST_RADIUS, HIT_TEST_RADIUS));
                 UIElement element = null;
-                VisualTreeHelper.HitTest(window, null, OnResultCallback, hitTestParameters);
-
-                HitTestResultBehavior OnResultCallback(HitTestResult result)
+                VisualTreeHelper.HitTest(
+                    window, null, new HitTestResultCallback(MyHitTestResultCallback), geometryHitParameters);
+                HitTestResultBehavior MyHitTestResultCallback(HitTestResult result)
                 {
-                    HitTestResultBehavior value;
-
-                    if (result is PointHitTestResult hitTestResult &&
-                        hitTestResult.VisualHit is UIElement elementHit &&
-                        elementHit.IsHitTestVisible)
+                    GeometryHitTestResult r = (GeometryHitTestResult) result;
+                    IntersectionDetail intersectionDetail = r.IntersectionDetail;
+                    if ((intersectionDetail == IntersectionDetail.FullyContains ||
+                         intersectionDetail == IntersectionDetail.FullyInside ||
+                         intersectionDetail == IntersectionDetail.Intersects) &&
+                        r.VisualHit is UIElement elementHit && elementHit.IsHitTestVisible)
                     {
                         element = elementHit;
-                        pointHit = hitTestResult.PointHit;
-                        value = HitTestResultBehavior.Stop;
+                        return HitTestResultBehavior.Stop;
                     }
                     else
                     {
-                        value = HitTestResultBehavior.Continue;
+                        return HitTestResultBehavior.Continue;
                     }
-
-                    return value;
                 }
 
                 if (element != null)
