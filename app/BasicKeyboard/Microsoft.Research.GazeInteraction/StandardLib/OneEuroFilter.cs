@@ -17,7 +17,8 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
     {
         private const float ONEEUROFILTER_DEFAULT_BETA = 5.0f;
         private const float ONEEUROFILTER_DEFAULT_CUTOFF = 0.1f;
-        private const float ONEEUROFILTER_DEFAULT_VELOCITY_CUTOFF = 1.0f;
+        // Lower this value if jitter at low speed is a problem.
+        private const float ONEEUROFILTER_DEFAULT_VELOCITY_CUTOFF = 0.001f;
 
         public OneEuroFilter()
         {
