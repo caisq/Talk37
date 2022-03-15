@@ -222,7 +222,6 @@ namespace WebWatcher
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            UpdateWindowGeometryInternal();
             BoundListener listener = new BoundListener(async (string componentName, float[][] boxes) =>
             {
                 await Application.Current.Dispatcher.BeginInvoke(
