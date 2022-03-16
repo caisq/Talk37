@@ -21,7 +21,7 @@ namespace WebWatcher
         private readonly Func<int[], Task<int>> keyInjectionsCallback;
         private readonly Func<Task<int>> requestSoftKeyboardResetCallback;
         private readonly Func<double, double, Task<int>> windowResizeCallback;
-        private readonly Func<bool, double, Task<int>> setEyeGazeOptionsCallback;
+        private readonly Func<bool, double, double, Task<int>> setEyeGazeOptionsCallback;
         private readonly Func<string, Task<int>> saveSettingsCallback;
         private readonly Func<string> loadSettingsCallback;
         private readonly Func<int> quitAppCallback;
@@ -29,7 +29,7 @@ namespace WebWatcher
                              Func<int[], Task<int>> keyInjectionsCallback,
                              Func<Task<int>> requestSoftKeyboardResetCallback,
                              Func<double, double, Task<int>> windowResizeCallback,
-                             Func<bool, double, Task<int>> setEyeGazeOptions,
+                             Func<bool, double, double, Task<int>> setEyeGazeOptions,
                              Func<string, Task<int>> saveSettingsCallback,
                              Func<string> loadSettingsCallback,
                              Func<int> quitAppCallback) {
@@ -77,9 +77,11 @@ namespace WebWatcher
             windowResizeCallback(height, width);
         }
 
-        public void setEyeGazeOptions(bool showGazeTracker, double gazeFuzzyRadius)
+        public void setEyeGazeOptions(bool showGazeTracker,
+                                      double gazeFuzzyRadius,
+                                      double dwellDelayMillis)
         {
-            setEyeGazeOptionsCallback(showGazeTracker, gazeFuzzyRadius);
+            setEyeGazeOptionsCallback(showGazeTracker, gazeFuzzyRadius, dwellDelayMillis);
         }
 
         public void saveSettings(string serializedAppSettings)
@@ -293,12 +295,13 @@ namespace WebWatcher
                             TheBrowser.Focus();
                         }));
                 return 0;
-            }, async (bool showGazeTracker, double gazeFuzzyRadius) =>
+            }, async (bool showGazeTracker, double gazeFuzzyRadius, double dwellDelayMillis) =>
             {
                 Debug.WriteLine(
                     $"Setting showGazeTracker to {showGazeTracker}, gazeFuzzyRadius to {gazeFuzzyRadius}");
                 GazeCursor.SetIsCursorVisible(showGazeTracker);
                 GazeCursor.SetHitTestRadius(gazeFuzzyRadius);
+                GazePointer.SetDwellDelay(TimeSpan.FromMilliseconds(dwellDelayMillis));
                 return 0;
             }, async (string serializedAppSettings) =>
             {

@@ -15,7 +15,6 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
     /// </summary>
     public class GazePointer
     {
-        // units in microseconds
         private static readonly TimeSpan DEFAULT_FIXATION_DELAY = TimeSpan.FromMilliseconds(350);
         private static readonly TimeSpan DEFAULT_DWELL_DELAY = TimeSpan.FromMilliseconds(400);
         private static readonly TimeSpan DEFAULT_DWELL_REPEAT_DELAY = TimeSpan.FromMilliseconds(400);
@@ -47,7 +46,7 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
 
             if (settings.TryGetValue("GazePointer.DwellDelay", out var dwellDelay))
             {
-                _defaultDwell = new TimeSpan((int)dwellDelay * 10);
+                _dwellDelay = new TimeSpan((int)dwellDelay * 10);
             }
 
             if (settings.TryGetValue("GazePointer.DwellRepeatDelay", out var dwellRepeatDelay))
@@ -245,7 +244,7 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
             switch (state)
             {
                 case PointerState.Fixation: return _defaultFixation;
-                case PointerState.Dwell: return _defaultDwell;
+                case PointerState.Dwell: return _dwellDelay;
                 case PointerState.DwellRepeat: return _defaultRepeatDelay;
                 case PointerState.Enter: return _defaultThreshold;
                 case PointerState.Exit: return _defaultThreshold;
@@ -566,6 +565,11 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
             _currentlyFixatedElement?.RaiseGazePointerEvent(PointerState.Enter, EyesOffDelay);
         }
 
+        public static void SetDwellDelay(TimeSpan dwellDelay)
+        {
+            _dwellDelay = dwellDelay;
+        }
+
         private readonly List<int> _roots = new List<int>();
 
         private readonly IGazeTarget _target;
@@ -582,7 +586,7 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
         private TimeSpan _lastTimestamp;
 
         private TimeSpan _defaultFixation = DEFAULT_FIXATION_DELAY;
-        private TimeSpan _defaultDwell = DEFAULT_DWELL_DELAY;
+        private static TimeSpan _dwellDelay = DEFAULT_DWELL_DELAY;
         private TimeSpan _defaultDwellRepeatDelay = DEFAULT_DWELL_REPEAT_DELAY;
         private TimeSpan _defaultRepeatDelay = DEFAULT_REPEAT_DELAY;
         private TimeSpan _defaultThreshold = DEFAULT_THRESHOLD_DELAY;
