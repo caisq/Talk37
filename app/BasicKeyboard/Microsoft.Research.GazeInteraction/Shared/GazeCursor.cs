@@ -27,6 +27,7 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
     {
         private const int DEFAULT_CURSOR_RADIUS = 5;
         private const bool DEFAULT_CURSOR_VISIBILITY = true;
+        private const double DEFAULT_HIT_TEST_RADIUS = 20.0;
 
         private static readonly DependencyProperty _gazeTargetItemProperty = DependencyProperty.RegisterAttached("_GazeTargetItem", typeof(GazeTargetItem), typeof(GazeCursor), new PropertyMetadata(null));
 
@@ -45,6 +46,16 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
             {
                 IsCursorVisible = (bool)settings["GazeCursor.CursorVisibility"];
             }
+        }
+
+        public static void SetIsCursorVisible(bool isCursorVisible)
+        {
+            _isCursorVisible = isCursorVisible;
+        }
+
+        public static void SetHitTestRadius(double hitTestRadius)
+        {
+            _hitTestRadius = Math.Max(hitTestRadius, 1);
         }
 
         public void AddElementToTargetItemFactory(Func<UIElement, GazeTargetItem> factory)
@@ -96,7 +107,6 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
             return element;
         }
 #else
-        private static double HIT_TEST_RADIUS = 20.0;
         internal UIElement GetHitElement(double x, double y)
         { 
 
@@ -111,7 +121,7 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
 
                 Point pointFromScreen = window.PointFromScreen(new Point(x, y));
                 GeometryHitTestParameters geometryHitParameters = new GeometryHitTestParameters(
-                    new EllipseGeometry(pointFromScreen, HIT_TEST_RADIUS, HIT_TEST_RADIUS));
+                    new EllipseGeometry(pointFromScreen, _hitTestRadius, _hitTestRadius));
                 UIElement element = null;
                 VisualTreeHelper.HitTest(
                     window, null, new HitTestResultCallback(MyHitTestResultCallback), geometryHitParameters);
@@ -351,7 +361,8 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
         }
 
         private readonly Popup _gazePopup;
-        private bool _isCursorVisible = DEFAULT_CURSOR_VISIBILITY;
+        private static bool _isCursorVisible = DEFAULT_CURSOR_VISIBILITY;
+        private static double _hitTestRadius = DEFAULT_HIT_TEST_RADIUS;
         private bool _isGazeEntered;
     }
 }
