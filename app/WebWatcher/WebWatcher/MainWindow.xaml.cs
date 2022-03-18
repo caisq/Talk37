@@ -116,6 +116,7 @@ namespace WebWatcher
         private static string APP_SETTINGS_JSON_FILENAME = "app-settings.json";
         private static double WINDOW_SIZE_HEIGHT_PADDING = 24.0;
         private static double WINDOW_SIZE_WIDTH_PADDING = 24.0;
+        private static int PAGE_LOADING_TIMEOUT_SECONDS = 10;
         // TODO(cais): DO NOT HARDCODE. Get from API instead.
         private static double SCREEN_SCALE = 2.0;
         private AuthWindow authWindow;
@@ -130,6 +131,8 @@ namespace WebWatcher
         private readonly KeyLogger keyLogger;
         private readonly System.Threading.Timer timer;
         private readonly System.Threading.Timer positioningTimer;
+        private System.Timers.Timer pageLoadingTimer;
+        private bool timeoutDialogShown = false;
         private CefSharp.DevTools.DevToolsClient devToolsClient;
         private volatile bool injectingKeys = false;
         private const UInt32 KEYEVENTF_EXTENDEDKEY = 0x0001;
@@ -155,6 +158,26 @@ namespace WebWatcher
             // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
             Debug.WriteLine($"Key in focus app: {vkCode}, {(char)vkCode}");  // DEBUG
             TheBrowser.ExecuteScriptAsync($"window.externalKeypressHook({vkCode})");
+        }
+        public void PageLoadingTimerTick(object state, System.Timers.ElapsedEventArgs e)
+        {
+            _ = Application.Current.Dispatcher.BeginInvoke(
+                System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                {
+                    if (!timeoutDialogShown)
+                    {
+                        TheBrowser.Stop();
+                        System.Windows.Forms.MessageBox.Show(
+                                $"The app page did not load properly in {PAGE_LOADING_TIMEOUT_SECONDS} seconds. " +
+                                "Check your network and try again. If the problem persists, " +
+                                "contact the service owner.",
+                                "App page loading timed out",
+                                System.Windows.Forms.MessageBoxButtons.OK,
+                                System.Windows.Forms.MessageBoxIcon.Error);
+                        timeoutDialogShown = true;
+                    }
+                    Application.Current.Shutdown();
+                }));
         }
 
         public async void TimerTick(object state)
@@ -356,6 +379,17 @@ namespace WebWatcher
                             webViewUrl = webViewUrl.Replace("${user_email}", userInfo.userEmail);
                             webViewUrl = webViewUrl.Replace("${user_given_name}", userInfo.userGivenName);
                             Debug.WriteLine($"URL for web view: {webViewUrl}");
+                            pageLoadingTimer = new System.Timers.Timer();
+                            pageLoadingTimer.Interval = PAGE_LOADING_TIMEOUT_SECONDS * 1000;
+                            pageLoadingTimer.Elapsed += PageLoadingTimerTick;
+                            pageLoadingTimer.Start();
+                            TheBrowser.LoadingStateChanged += (object s, LoadingStateChangedEventArgs args) =>
+                            {
+                                if (!args.IsLoading && pageLoadingTimer != null)
+                                {
+                                    pageLoadingTimer.Stop();
+                                }
+                            };
                             TheBrowser.Load(webViewUrl);
                             TheBrowser.ExecuteScriptAsyncWhenPageLoaded(
                                 "document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });");
@@ -400,7 +434,6 @@ namespace WebWatcher
                 });
             repositionWindow.Show();
         }
-
         void Window_Activated(object sender, EventArgs e)
         {
             if (TheBrowser == null)
