@@ -24,6 +24,7 @@ namespace WebWatcher
         private readonly Func<bool, double, double, Task<int>> setEyeGazeOptionsCallback;
         private readonly Func<string, Task<int>> saveSettingsCallback;
         private readonly Func<string> loadSettingsCallback;
+        private readonly Func<string> getSerializedHostInfoCallback;
         private readonly Func<int> quitAppCallback;
         public BoundListener(Func<string, float[][], Task<int>> updateButtonBoxesCallback,
                              Func<int[], string, Task<int>> keyInjectionsCallback,
@@ -32,6 +33,7 @@ namespace WebWatcher
                              Func<bool, double, double, Task<int>> setEyeGazeOptions,
                              Func<string, Task<int>> saveSettingsCallback,
                              Func<string> loadSettingsCallback,
+                             Func<string> getSerializedHostInfoCallback,
                              Func<int> quitAppCallback) {
             this.updateButtonBoxesCallback = updateButtonBoxesCallback;
             this.keyInjectionsCallback = keyInjectionsCallback;
@@ -40,6 +42,7 @@ namespace WebWatcher
             this.setEyeGazeOptionsCallback = setEyeGazeOptions;
             this.saveSettingsCallback = saveSettingsCallback;
             this.loadSettingsCallback = loadSettingsCallback;
+            this.getSerializedHostInfoCallback = getSerializedHostInfoCallback;
             this.quitAppCallback = quitAppCallback;
         }
 
@@ -92,6 +95,11 @@ namespace WebWatcher
         public string loadSettings()
         {
             return loadSettingsCallback();
+        }
+
+        public string getSerializedHostInfo()
+        {
+            return getSerializedHostInfoCallback();
         }
 
         public void requestQuitApp()
@@ -357,6 +365,9 @@ namespace WebWatcher
                 {
                     return null;
                 }
+            }, () =>
+            {
+                return HostInfo.GetSerializedHostInfo();
             }, () =>
             {
                 Application.Current.Dispatcher.BeginInvoke(
