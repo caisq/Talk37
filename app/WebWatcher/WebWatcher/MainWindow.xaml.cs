@@ -18,7 +18,7 @@ namespace WebWatcher
     class BoundListener
     {
         private readonly Func<string, float[][], Task<int>> updateButtonBoxesCallback;
-        private readonly Func<int[], Task<int>> keyInjectionsCallback;
+        private readonly Func<int[], string, Task<int>> keyInjectionsCallback;
         private readonly Func<Task<int>> requestSoftKeyboardResetCallback;
         private readonly Func<double, double, Task<int>> windowResizeCallback;
         private readonly Func<bool, double, double, Task<int>> setEyeGazeOptionsCallback;
@@ -26,7 +26,7 @@ namespace WebWatcher
         private readonly Func<string> loadSettingsCallback;
         private readonly Func<int> quitAppCallback;
         public BoundListener(Func<string, float[][], Task<int>> updateButtonBoxesCallback,
-                             Func<int[], Task<int>> keyInjectionsCallback,
+                             Func<int[], string, Task<int>> keyInjectionsCallback,
                              Func<Task<int>> requestSoftKeyboardResetCallback,
                              Func<double, double, Task<int>> windowResizeCallback,
                              Func<bool, double, double, Task<int>> setEyeGazeOptions,
@@ -59,9 +59,9 @@ namespace WebWatcher
         }
 
         // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
-        public void injectKeys(int[] vkCodes)
+        public void injectKeys(int[] vkCodes, string text)
         {
-            keyInjectionsCallback(vkCodes);
+            keyInjectionsCallback(vkCodes, text);
         }
 
         // Request host app to reset the state of the softkeyboard attached to it.
@@ -268,8 +268,16 @@ namespace WebWatcher
                             _ = TheBrowser.Focus();
                         }));
                 return 0;  // TODO(cais): Remove dummy return value.
-            }, async (int[] vkCodes) =>
+            }, async (int[] vkCodes, string text) =>
             {
+                if (text != null && text.Length > 0)
+                {
+                    await Application.Current.Dispatcher.BeginInvoke(
+                        System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                        {
+                            Clipboard.SetText(text);
+                        }));
+                }
                 if (!focusAppRunning || focusAppHandle.ToInt32() <= 0)
                 {
                     FocusOnMainWindowAndWebView(/* showWindow= */ false);
