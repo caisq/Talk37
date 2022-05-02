@@ -82,7 +82,9 @@ namespace WebWatcher
         private async Task<string> ConvertRefreshTokenToAccessToken(string refreshToken)
         {
             string clientId = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_CLIENT_ID");
+            CheckStringIsNotNullOrEmpty(clientId, "Client ID");
             string clientSecret = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_CLIENT_SECRET");
+            CheckStringIsNotNullOrEmpty(clientSecret, "Client secret");
             // TODO(cais): Refactor into helper method.
             string tokenRequestURI = "https://www.googleapis.com/oauth2/v4/token";
             string tokenRequestBody = string.Format(
@@ -130,18 +132,33 @@ namespace WebWatcher
             }
             catch (WebException ex)
             {
-                System.Windows.Forms.MessageBox.Show(
+                ShowErrorDialogAndQuit(
                     "Network error: Check your network connection.\n" + ex.ToString(),
-                    "Network error",
-                    System.Windows.Forms.MessageBoxButtons.OK,
-                    System.Windows.Forms.MessageBoxIcon.Error);
-                _ = Application.Current.Dispatcher.BeginInvoke(
-                    System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
-                    {
-                        Application.Current.Shutdown();
-                    }));
+                    "Network error");
                 return null;
             }
+        }
+
+        private void CheckStringIsNotNullOrEmpty(string s, string stringName)
+        {
+            if (s == null || s == "")
+            {
+                ShowErrorDialogAndQuit($"Cannot load {stringName}", $"{stringName} error");
+            }
+        }
+
+        private void ShowErrorDialogAndQuit(string errorMessage, string dialogTitle)
+        {
+            System.Windows.Forms.MessageBox.Show(
+                    errorMessage,
+                    dialogTitle,
+                    System.Windows.Forms.MessageBoxButtons.OK,
+                    System.Windows.Forms.MessageBoxIcon.Error);
+            _ = Application.Current.Dispatcher.BeginInvoke(
+                System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                {
+                    Application.Current.Shutdown();
+                }));
         }
 
         public async void TryApplyRefreshToken(object state)
@@ -195,7 +212,9 @@ namespace WebWatcher
             http.Start();
 
             string clientId = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_CLIENT_ID");
+            CheckStringIsNotNullOrEmpty(clientId, "Client ID");
             string clientSecret = Environment.GetEnvironmentVariable("SPEAKFASTER_WEBVIEW_CLIENT_SECRET");
+            CheckStringIsNotNullOrEmpty(clientSecret, "Client secret");
             Debug.Assert(clientId != null && clientId != "");
             // scope=openid
             string authorizationRequest = string.Format(

@@ -31,6 +31,7 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction.Device
 
         private void Worker()
         {
+            // TODO(cais): Better error message.
             if (Interop.tobii_get_api_version(out var version) == tobii_error_t.TOBII_ERROR_NO_ERROR)
             {
                 Debug.WriteLine($"Version is {version.major}.{version.minor}.{version.revision}.{version.build}");

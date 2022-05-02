@@ -394,9 +394,12 @@ namespace WebWatcher
                             string webViewUrlTemplate = Environment.GetEnvironmentVariable(
                                 "SPEAKFASTER_WEBVIEW_URL_WITH_ACCESS_TOKEN_TEMPLATE");
                             Debug.Assert(webViewUrlTemplate != null && webViewUrlTemplate != "");
-                            string webViewUrl = webViewUrlTemplate.Replace("${access_token}", accessToken);
-                            webViewUrl = webViewUrl.Replace("${user_email}", userInfo.userEmail);
-                            webViewUrl = webViewUrl.Replace("${user_given_name}", userInfo.userGivenName);
+                            string webViewUrl = VerifyAndReplaceSubstring(
+                                webViewUrlTemplate, "${access_token}", accessToken);
+                            webViewUrl = VerifyAndReplaceSubstring(
+                                webViewUrl, "${user_email}", userInfo.userEmail);
+                            webViewUrl = VerifyAndReplaceSubstring(
+                                webViewUrl, "${user_given_name}", userInfo.userGivenName);
                             Debug.WriteLine($"URL for web view: {webViewUrl}");
                             pageLoadingTimer = new System.Timers.Timer();
                             pageLoadingTimer.Interval = PAGE_LOADING_TIMEOUT_SECONDS * 1000;
@@ -474,6 +477,25 @@ namespace WebWatcher
         void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private string VerifyAndReplaceSubstring(string str, string substr, string target)
+        {
+            if (!str.Contains(substr))
+            {
+                System.Windows.Forms.MessageBox.Show(
+                    $"Cannot find substring {substr}",
+                    "String replacement error",
+                    System.Windows.Forms.MessageBoxButtons.OK,
+                    System.Windows.Forms.MessageBoxIcon.Error);
+                _ = Application.Current.Dispatcher.BeginInvoke(
+                    System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                    {
+                        Application.Current.Shutdown();
+                    }));
+                return str;
+            }
+            return str.Replace(substr, target);
         }
 
         private string GetAppSettingsFilePath()
