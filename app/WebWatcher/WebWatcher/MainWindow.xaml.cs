@@ -165,7 +165,7 @@ namespace WebWatcher
             }
             // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
             Debug.WriteLine($"Key in focus app: {vkCode}, {(char)vkCode}");  // DEBUG
-            TheBrowser.ExecuteScriptAsync($"window.externalKeypressHook({vkCode})");
+            TheBrowser.ExecuteScriptAsync($"window.externalKeypressHook({vkCode}, true)");
         }
         public void PageLoadingTimerTick(object state, System.Timers.ElapsedEventArgs e)
         {

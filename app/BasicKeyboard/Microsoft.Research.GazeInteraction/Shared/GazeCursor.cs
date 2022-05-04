@@ -118,8 +118,17 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
                 {
                     continue;
                 }
-
+                ////if (x < window.Left - _hitTestRadius || x > window.Left + window.Width + _hitTestRadius ||
+                //if (y < window.Top - _hitTestRadius || y > window.Top + window.Height + _hitTestRadius)
+                //{
+                //    // Prevents hits outside the window.
+                //    continue;
+                //}
                 Point pointFromScreen = window.PointFromScreen(new Point(x, y));
+                if (pointFromScreen.X > window.Width || pointFromScreen.Y > window.Height)
+                {
+                    continue;
+                }
                 GeometryHitTestParameters geometryHitParameters = new GeometryHitTestParameters(
                     new EllipseGeometry(pointFromScreen, _hitTestRadius, _hitTestRadius));
                 UIElement element = null;
