@@ -1,4 +1,5 @@
 ﻿//using Microsoft.Toolkit.Uwp.Input.GazeInteraction.Device;
+using Tobii.StreamEngine;
 
 namespace WebWatcher
 {
@@ -13,11 +14,11 @@ namespace WebWatcher
         public static string GetSerializedHostInfo()
         {
             string tobiiStreamEngineVersion = "";
-            // TODO(cais): Add reference. Prevent leak and failure to quit.
-            //if (GazeDevice.Instance != null)
-            //{
-                //tobiiStreamEngineVersion = GazeDevice.Instance.GetVersion();
-            //}
+            if (Interop.tobii_get_api_version(out var version) == tobii_error_t.TOBII_ERROR_NO_ERROR)
+            {
+                tobiiStreamEngineVersion =
+                    $"{version.major}.{version.minor}.{version.revision}.{version.build}";
+            }
             string hostInfoString =
                 $"{{\"hostAppVersion\": \"{VERSION}\", \"engineVersion\": \"{tobiiStreamEngineVersion}\"}}";
             return hostInfoString;

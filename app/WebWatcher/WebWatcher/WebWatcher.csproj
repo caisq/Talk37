@@ -177,6 +177,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\BasicKeyboard\Microsoft.Research.GazeInteraction\FrameworkLib.Devices\FrameworkLib.Devices.csproj">
+      <Project>{9dcf1c1d-a140-4ec0-afe8-d46ffe679c32}</Project>
+      <Name>FrameworkLib.Devices</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\BasicKeyboard\Microsoft.Research.GazeInteraction\FrameworkLib\FrameworkLib.csproj">
       <Project>{b0c5978f-35fc-4c5f-8355-e28a952d4047}</Project>
       <Name>FrameworkLib</Name>
