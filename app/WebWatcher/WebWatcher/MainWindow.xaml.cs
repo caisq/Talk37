@@ -124,7 +124,7 @@ namespace WebWatcher
         private static string APP_SETTINGS_JSON_FILENAME = "app-settings.json";
         private static double WINDOW_SIZE_HEIGHT_PADDING = 24.0;
         private static double WINDOW_SIZE_WIDTH_PADDING = 24.0;
-        private static int PAGE_LOADING_TIMEOUT_SECONDS = 10;
+        private static int PAGE_LOADING_TIMEOUT_MILLIS = 15 * 1000;
         // TODO(cais): DO NOT HARDCODE. Get from API instead.
         private static double SCREEN_SCALE = 2.0;
         private AuthWindow authWindow;
@@ -176,7 +176,7 @@ namespace WebWatcher
                     {
                         TheBrowser.Stop();
                         System.Windows.Forms.MessageBox.Show(
-                                $"The app page did not load properly in {PAGE_LOADING_TIMEOUT_SECONDS} seconds. " +
+                                $"SpeakFaster page did not load properly in {PAGE_LOADING_TIMEOUT_MILLIS / 1000.0} seconds. " +
                                 "Check your network and try again. If the problem persists, " +
                                 "contact the service owner.",
                                 "App page loading timed out",
@@ -402,14 +402,23 @@ namespace WebWatcher
                                 webViewUrl, "${user_given_name}", userInfo.userGivenName);
                             Debug.WriteLine($"URL for web view: {webViewUrl}");
                             pageLoadingTimer = new System.Timers.Timer();
-                            pageLoadingTimer.Interval = PAGE_LOADING_TIMEOUT_SECONDS * 1000;
+                            pageLoadingTimer.Interval = PAGE_LOADING_TIMEOUT_MILLIS;
                             pageLoadingTimer.Elapsed += PageLoadingTimerTick;
-                            pageLoadingTimer.Start();
                             TheBrowser.LoadingStateChanged += (object s, LoadingStateChangedEventArgs args) =>
                             {
-                                if (!args.IsLoading && pageLoadingTimer != null)
-                                {
-                                    pageLoadingTimer.Stop();
+                                if (args.IsLoading)
+                                {  // This is the first call, indicating the loading has started.
+                                    if (pageLoadingTimer != null)
+                                    {
+                                        pageLoadingTimer.Start();
+                                    }
+                                }
+                                else
+                                {   // This is the second call, indicating the loading has ended.
+                                    if (pageLoadingTimer != null)
+                                    {
+                                        pageLoadingTimer.Stop();
+                                    }
                                 }
                             };
                             TheBrowser.Load(webViewUrl);
