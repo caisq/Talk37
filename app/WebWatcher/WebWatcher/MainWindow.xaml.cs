@@ -18,6 +18,8 @@ namespace WebWatcher
     class BoundListener
     {
         private readonly Func<string, float[][], Task<int>> updateButtonBoxesCallback;
+        private readonly Func<Task<int>> bringWindowToForegroundCallback;
+        private readonly Func<Task<int>> bringFocusAppToForegroundCallback;
         private readonly Func<int[], string, Task<int>> keyInjectionsCallback;
         private readonly Func<Task<int>> requestSoftKeyboardResetCallback;
         private readonly Func<double, double, Task<int>> windowResizeCallback;
@@ -27,6 +29,8 @@ namespace WebWatcher
         private readonly Func<string> getSerializedHostInfoCallback;
         private readonly Func<int> quitAppCallback;
         public BoundListener(Func<string, float[][], Task<int>> updateButtonBoxesCallback,
+                             Func<Task<int>> bringWindowToForegroundCallback,
+                             Func<Task<int>> bringFocusAppToForegroundCallback,
                              Func<int[], string, Task<int>> keyInjectionsCallback,
                              Func<Task<int>> requestSoftKeyboardResetCallback,
                              Func<double, double, Task<int>> windowResizeCallback,
@@ -36,6 +40,8 @@ namespace WebWatcher
                              Func<string> getSerializedHostInfoCallback,
                              Func<int> quitAppCallback) {
             this.updateButtonBoxesCallback = updateButtonBoxesCallback;
+            this.bringWindowToForegroundCallback = bringWindowToForegroundCallback;
+            this.bringFocusAppToForegroundCallback = bringFocusAppToForegroundCallback;
             this.keyInjectionsCallback = keyInjectionsCallback;
             this.requestSoftKeyboardResetCallback = requestSoftKeyboardResetCallback;
             this.windowResizeCallback = windowResizeCallback;
@@ -59,6 +65,16 @@ namespace WebWatcher
         public void updateButtonBoxes(string componentName, float[][] boxes)
         {
             updateButtonBoxesCallback(componentName, boxes);
+        }
+
+        public void bringWindowToForeground()
+        {
+            bringWindowToForegroundCallback();
+        }
+
+        public void bringFocusAppToForeground()
+        {
+            bringFocusAppToForegroundCallback();
         }
 
         // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
@@ -276,6 +292,14 @@ namespace WebWatcher
                             _ = TheBrowser.Focus();
                         }));
                 return 0;  // TODO(cais): Remove dummy return value.
+            }, async () =>
+            {
+                FocusOnMainWindowAndWebView(/* showWindow= */ true);
+                return 0;
+            }, async () =>
+            {
+                MaybeFocusOFocusApp();
+                return 0;
             }, async (int[] vkCodes, string text) =>
             {
                 if (text != null && text.Length > 0)
@@ -539,6 +563,19 @@ namespace WebWatcher
                     }
                     _ = SetForegroundWindow(hThisWindow);
                     _ = TheBrowser.Focus();
+                }));
+        }
+
+        private async void MaybeFocusOFocusApp()
+        {
+            await Application.Current.Dispatcher.BeginInvoke(
+                System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                {
+                    if (focusAppHandle == null || focusAppHandle.ToInt32() < 0)
+                    {
+                        return;
+                    }
+                    SetForegroundWindow(focusAppHandle);
                 }));
         }
 
