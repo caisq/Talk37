@@ -20,6 +20,7 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction.Device
         private readonly Dispatcher _dispatcher;
         private volatile bool _isWaiting;
         private volatile int _waitEpoch;
+        private string _version = "";
 
         private GazeDevice()
         {
@@ -34,7 +35,8 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction.Device
             // TODO(cais): Better error message.
             if (Interop.tobii_get_api_version(out var version) == tobii_error_t.TOBII_ERROR_NO_ERROR)
             {
-                Debug.WriteLine($"Version is {version.major}.{version.minor}.{version.revision}.{version.build}");
+                _version = $"{version.major}.{version.minor}.{version.revision}.{version.build}";
+                Debug.WriteLine($"Tobii Stream Engine version is {_version}");
 
                 // Create API context
                 Check(Interop.tobii_api_create(out var apiContext, null));
@@ -197,6 +199,11 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction.Device
         Task<bool> IGazeDevice.RequestCalibrationAsync()
         {
             return Task.FromResult(false);
+        }
+
+        public string GetVersion()
+        {
+            return _version;
         }
     }
 }
