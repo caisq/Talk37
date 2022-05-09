@@ -561,7 +561,15 @@ namespace WebWatcher
                     {
                         hThisWindow = new System.Windows.Interop.WindowInteropHelper(this).Handle;
                     }
-                    _ = SetForegroundWindow(hThisWindow);
+                    const int MAX_FOREGROUND_TRIES = 8;
+                    for (int i = 0; i < MAX_FOREGROUND_TRIES; ++i)
+                    {
+                        _ = SetForegroundWindow(hThisWindow);
+                        if (GetForegroundWindow() == hThisWindow)
+                        {
+                            break;
+                        }
+                    }
                     _ = TheBrowser.Focus();
                 }));
         }
@@ -595,8 +603,32 @@ namespace WebWatcher
                 box[0], box[1], box[2], box[3]);
         }
 
+        private void RemoveAllOverlayButtons()
+        {
+            List<Button> buttonsToRemove = new List<Button>();
+            foreach (var element in overlayCanvas.Children)
+            {
+                Button button = element as Button;
+                if (button == null)
+                {
+                    continue;
+                }
+                buttonsToRemove.Add(button);
+            }
+            foreach (Button button in buttonsToRemove)
+            {
+                overlayCanvas.Children.Remove(button);
+            }
+            componentButtons.Clear();
+        }
+
         private async Task AddGazeButtonsForComponent(string componentName, float[][] boxes)
         {
+            if (componentName == "__remove_all__")
+            {  // Special compnent name to request removal of all gaze buttons.
+                RemoveAllOverlayButtons();
+                return;
+            }
             if (!componentButtons.ContainsKey(componentName))
             {
                 componentButtons.Add(componentName, new HashSet<string>());

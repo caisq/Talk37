@@ -8,7 +8,7 @@ namespace WebWatcher
         // Version string for the host app.
         private static string VERSION_MAJOR = "0";
         private static string VERSION_MINOR = "0";
-        private static string VERSION_PATCH = "4";
+        private static string VERSION_PATCH = "5";
         private static string VERSION =
             $"{VERSION_MAJOR}.{VERSION_MINOR}.{VERSION_PATCH}";
         public static string GetSerializedHostInfo()
