@@ -57,6 +57,10 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
         {
             _hitTestRadius = Math.Max(hitTestRadius, 1);
         }
+        public static void SetEnabled(bool enabled)
+        {
+            _enabled = enabled;
+        }
 
         public void AddElementToTargetItemFactory(Func<UIElement, GazeTargetItem> factory)
         {
@@ -108,8 +112,11 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
         }
 #else
         internal UIElement GetHitElement(double x, double y)
-        { 
-
+        {
+            if (!_enabled)
+            {
+                return null;
+            }
             var gazePointD = new Point(x, y);
             WindowCollection windows = Application.Current.Windows;
             foreach (Window window in windows)
@@ -370,6 +377,8 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
         }
 
         private readonly Popup _gazePopup;
+        // Whether gaze buttons are enabled.
+        private static bool _enabled = true;
         private static bool _isCursorVisible = DEFAULT_CURSOR_VISIBILITY;
         private static double _hitTestRadius = DEFAULT_HIT_TEST_RADIUS;
         private bool _isGazeEntered;

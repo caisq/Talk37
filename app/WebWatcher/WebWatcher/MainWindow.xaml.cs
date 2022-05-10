@@ -20,6 +20,7 @@ namespace WebWatcher
         private readonly Func<string, float[][], Task<int>> updateButtonBoxesCallback;
         private readonly Func<Task<int>> bringWindowToForegroundCallback;
         private readonly Func<Task<int>> bringFocusAppToForegroundCallback;
+        private readonly Func<bool> toggleGazeButtonsStateCallback;
         private readonly Func<int[], string, Task<int>> keyInjectionsCallback;
         private readonly Func<Task<int>> requestSoftKeyboardResetCallback;
         private readonly Func<double, double, Task<int>> windowResizeCallback;
@@ -34,7 +35,8 @@ namespace WebWatcher
                              Func<int[], string, Task<int>> keyInjectionsCallback,
                              Func<Task<int>> requestSoftKeyboardResetCallback,
                              Func<double, double, Task<int>> windowResizeCallback,
-                             Func<bool, double, double, Task<int>> setEyeGazeOptions,
+                             Func<bool> toggleGazeButtonsStateCallback,
+                             Func<bool, double, double, Task<int>> setEyeGazeOptionsCallback,
                              Func<string, Task<int>> saveSettingsCallback,
                              Func<string> loadSettingsCallback,
                              Func<string> getSerializedHostInfoCallback,
@@ -45,7 +47,8 @@ namespace WebWatcher
             this.keyInjectionsCallback = keyInjectionsCallback;
             this.requestSoftKeyboardResetCallback = requestSoftKeyboardResetCallback;
             this.windowResizeCallback = windowResizeCallback;
-            this.setEyeGazeOptionsCallback = setEyeGazeOptions;
+            this.toggleGazeButtonsStateCallback = toggleGazeButtonsStateCallback;
+            this.setEyeGazeOptionsCallback = setEyeGazeOptionsCallback;
             this.saveSettingsCallback = saveSettingsCallback;
             this.loadSettingsCallback = loadSettingsCallback;
             this.getSerializedHostInfoCallback = getSerializedHostInfoCallback;
@@ -75,6 +78,11 @@ namespace WebWatcher
         public void bringFocusAppToForeground()
         {
             bringFocusAppToForegroundCallback();
+        }
+
+        public bool toggleGazeButtonsState()
+        {
+            return toggleGazeButtonsStateCallback();
         }
 
         // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
@@ -143,6 +151,7 @@ namespace WebWatcher
         private static int PAGE_LOADING_TIMEOUT_MILLIS = 15 * 1000;
         // TODO(cais): DO NOT HARDCODE. Get from API instead.
         private static double SCREEN_SCALE = 2.0;
+        private bool gazeButtonsEnabled = true;
         private AuthWindow authWindow;
         private RepositionWindow repositionWindow;
         private int accessTokenCount = 0;
@@ -281,7 +290,7 @@ namespace WebWatcher
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             BoundListener listener = new BoundListener(async (string componentName, float[][] boxes) =>
-            {
+            {  // updateButtonBoxesCallback.
                 await Application.Current.Dispatcher.BeginInvoke(
                         System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                         {
@@ -293,15 +302,15 @@ namespace WebWatcher
                         }));
                 return 0;  // TODO(cais): Remove dummy return value.
             }, async () =>
-            {
+            {  // bringWindowToForegroundCallback.
                 FocusOnMainWindowAndWebView(/* showWindow= */ true);
                 return 0;
             }, async () =>
-            {
+            {  // bringFocusAppToForegroundCallback.
                 MaybeFocusOFocusApp();
                 return 0;
             }, async (int[] vkCodes, string text) =>
-            {
+            {  // keyInjectionsCallback.
                 if (text != null && text.Length > 0)
                 {
                     await Application.Current.Dispatcher.BeginInvoke(
@@ -338,7 +347,7 @@ namespace WebWatcher
                 FocusOnMainWindowAndWebView(/* showWindow= */ false);
                 return 0;
             }, async () =>
-            {
+            {  // requestSoftKeyboardResetCallback.
                 // This is a trick to cause the keyboard to reset:
                 // briefly hide and then show window. This flickers
                 // the app window slightly, which is a slight downside.
@@ -346,7 +355,7 @@ namespace WebWatcher
                 FocusOnMainWindowAndWebView(/* showWindow= */ true);
                 return 0;
             }, async (double height, double width) =>
-            {
+            {  // windowResizeCallback.
                 await Application.Current.Dispatcher.BeginInvoke(
                         System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                         {
@@ -358,8 +367,13 @@ namespace WebWatcher
                             TheBrowser.Focus();
                         }));
                 return 0;
+            }, () =>
+            {  // toggleGazeButtonsStateCallback.
+                gazeButtonsEnabled = !gazeButtonsEnabled;
+                GazeCursor.SetEnabled(gazeButtonsEnabled);
+                return gazeButtonsEnabled;
             }, async (bool showGazeTracker, double gazeFuzzyRadius, double dwellDelayMillis) =>
-            {
+            {  // setEyeGazeOptionsCallback.
                 Debug.WriteLine(
                     $"Setting showGazeTracker to {showGazeTracker}, gazeFuzzyRadius to {gazeFuzzyRadius}");
                 GazeCursor.SetIsCursorVisible(showGazeTracker);
@@ -367,7 +381,7 @@ namespace WebWatcher
                 GazePointer.SetDwellDelay(TimeSpan.FromMilliseconds(dwellDelayMillis));
                 return 0;
             }, async (string serializedAppSettings) =>
-            {
+            {  // saveSettingsCallback.
                 try
                 {
                     string appSettingsFilePath = GetAppSettingsFilePath();
@@ -379,7 +393,7 @@ namespace WebWatcher
                     return 1;
                 }
             }, () =>
-            {
+            {  // loadSettingsCallback.
                 try
                 {
                     string appSettingsFilePath = GetAppSettingsFilePath();
@@ -390,10 +404,10 @@ namespace WebWatcher
                     return null;
                 }
             }, () =>
-            {
+            {  // getSerializedHostInfoCallback
                 return HostInfo.GetSerializedHostInfo();
             }, () =>
-            {
+            {  // quitAppCallback.
                 Application.Current.Dispatcher.BeginInvoke(
                     System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                     {
