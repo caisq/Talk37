@@ -144,7 +144,8 @@ namespace WebWatcher
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static string FOCUS_APP_NAME = "balabolka";  // TODO(cais): Dehack.
+        private static string FOCUS_APP_NAME = "balabolka";  // TODO(cais): Dehack
+        private static int MAX_SETFOREGROUND_TRIES = 8;
         private static string APP_SETTINGS_JSON_FILENAME = "app-settings.json";
         private static double WINDOW_SIZE_HEIGHT_PADDING = 24.0;
         private static double WINDOW_SIZE_WIDTH_PADDING = 24.0;
@@ -575,8 +576,7 @@ namespace WebWatcher
                     {
                         hThisWindow = new System.Windows.Interop.WindowInteropHelper(this).Handle;
                     }
-                    const int MAX_FOREGROUND_TRIES = 8;
-                    for (int i = 0; i < MAX_FOREGROUND_TRIES; ++i)
+                    for (int i = 0; i < MAX_SETFOREGROUND_TRIES; ++i)
                     {
                         _ = SetForegroundWindow(hThisWindow);
                         if (GetForegroundWindow() == hThisWindow)
@@ -597,7 +597,14 @@ namespace WebWatcher
                     {
                         return;
                     }
-                    SetForegroundWindow(focusAppHandle);
+                    for (int i = 0; i < MAX_SETFOREGROUND_TRIES; ++i)
+                    {
+                        if (GetForegroundWindow() == focusAppHandle)
+                        {
+                            break;
+                        }
+                        SetForegroundWindow(focusAppHandle);
+                    }
                 }));
         }
 
