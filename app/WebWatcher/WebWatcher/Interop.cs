@@ -47,6 +47,9 @@ namespace WebWatcher.Win32
 
         [DllImport("user32.dll")]
         public static extern bool GetWindowRect(IntPtr hwnd, ref SysRect rectangle);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool BringWindowToTop(IntPtr hWnd);
     }
 
 }

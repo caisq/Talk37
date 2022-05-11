@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -170,6 +171,7 @@ namespace WebWatcher
         private CefSharp.DevTools.DevToolsClient devToolsClient;
         private volatile bool injectingKeys = false;
         private const UInt32 KEYEVENTF_EXTENDEDKEY = 0x0001;
+        private const UInt32 KEYEVENTF_KEYUP = 0x0002;
         private double windowTop = -1;
         private double windowBottom = -1;
 
@@ -308,7 +310,7 @@ namespace WebWatcher
                 return 0;
             }, async () =>
             {  // bringFocusAppToForegroundCallback.
-                MaybeFocusOFocusApp();
+                MaybeFocusOnFocusApp();
                 return 0;
             }, async (int[] vkCodes, string text) =>
             {  // keyInjectionsCallback.
@@ -566,7 +568,7 @@ namespace WebWatcher
         private async void FocusOnMainWindowAndWebView(Boolean showWindow)
         {
             await Application.Current.Dispatcher.BeginInvoke(
-                System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                System.Windows.Threading.DispatcherPriority.Normal, new Action(async () =>
                 {
                     if (showWindow)
                     {
@@ -581,6 +583,11 @@ namespace WebWatcher
                         _ = SetForegroundWindow(hThisWindow);
                         if (GetForegroundWindow() == hThisWindow)
                         {
+                            // Note: https://stackoverflow.com/a/1609443. This ensures that we
+                            // properly get the focus from the Windows operating system. 
+                            // See also https://stackoverflow.com/a/19136480.
+                            BringWindowToTop(hThisWindow);
+                            Activate();
                             break;
                         }
                     }
@@ -588,7 +595,7 @@ namespace WebWatcher
                 }));
         }
 
-        private async void MaybeFocusOFocusApp()
+        private async void MaybeFocusOnFocusApp()
         {
             await Application.Current.Dispatcher.BeginInvoke(
                 System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
