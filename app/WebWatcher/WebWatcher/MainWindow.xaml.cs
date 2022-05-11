@@ -7,7 +7,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -290,8 +289,33 @@ namespace WebWatcher
             return false;
         }
 
+        // Returns a System.Diagnostics.Process pointing to
+        // a pre-existing process with the same name as the
+        // current one, if any; or null if the current process
+        // is unique.
+        // https://stackoverflow.com/a/6416663
+        public static Process PriorProcess()
+        {
+            Process currentProcess = Process.GetCurrentProcess();
+            Process[] procs = Process.GetProcessesByName(currentProcess.ProcessName);
+            foreach (Process p in procs)
+            {
+                if ((p.Id != currentProcess.Id) &&
+                    (p.MainModule.FileName == currentProcess.MainModule.FileName))
+                    return p;
+            }
+            return null;
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            if (PriorProcess() != null)
+            {
+                // Ensure that there is only one instance of the app running at
+                // a time.
+                Application.Current.Shutdown();
+            }
+
             BoundListener listener = new BoundListener(async (string componentName, float[][] boxes) =>
             {  // updateButtonBoxesCallback.
                 await Application.Current.Dispatcher.BeginInvoke(
