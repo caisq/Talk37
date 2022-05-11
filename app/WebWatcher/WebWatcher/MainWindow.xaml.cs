@@ -586,12 +586,14 @@ namespace WebWatcher
                             // Note: https://stackoverflow.com/a/1609443. This ensures that we
                             // properly get the focus from the Windows operating system. 
                             // See also https://stackoverflow.com/a/19136480.
-                            BringWindowToTop(hThisWindow);
-                            Activate();
+                            // This may still not be fully working 100% of the time.                            Activate();
+                            keybd_event(0x12, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+                            keybd_event(0x12, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
                             break;
                         }
                     }
                     _ = TheBrowser.Focus();
+                    BringWindowToTop(hThisWindow);
                 }));
         }
 
