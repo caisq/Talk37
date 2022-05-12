@@ -612,10 +612,11 @@ namespace WebWatcher
                             // See also https://stackoverflow.com/a/19136480.
                             // This may still not be fully working 100% of the time.
                             Activate();
-                            keybd_event(0x32, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-                            keybd_event(0x32, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-                            keybd_event(0x08, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-                            keybd_event(0x08, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+                            // This disrupts the spell workflow.
+                            //keybd_event(0x32, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+                            //keybd_event(0x32, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+                            //keybd_event(0x08, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+                            //keybd_event(0x08, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
                             break;
                         }
                     }

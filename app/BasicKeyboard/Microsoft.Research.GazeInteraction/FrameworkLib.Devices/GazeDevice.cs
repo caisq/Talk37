@@ -147,6 +147,7 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction.Device
         {
             if (error != tobii_error_t.TOBII_ERROR_NO_ERROR)
             {
+                // TODO(cais): Add error handling.
                 throw new Exception(error.ToString());
             }
         }
