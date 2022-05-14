@@ -351,27 +351,43 @@ namespace WebWatcher
                     FocusOnMainWindowAndWebView(/* showWindow= */ false);
                     return 0;
                 }
-                if (vkCodes.Length == 0)
-                {
-                    return 0;
-                }
-                else
-                {
-                    SetForegroundWindow(focusAppHandle);
-                }
-                injectingKeys = true;
-                foreach (var vkCode in vkCodes)
-                {
-                    // TODO(cais): Check vkCode is not out of bound. Else, throw an error.
-                    Debug.WriteLine($"Injecting key {vkCode} to {focusAppHandle.ToInt32()}");  // DEBUG
-                    // NOTE: Repeated calling of keybd_event() without a 1-ms delay between calls
-                    // causes glitches, e.g., when there are repeated keys such as the l's in "Hello".
-                    await Task.Delay(1);
-                    keybd_event((byte)vkCode, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-                }
-                injectingKeys = false;
-                // Focus back on the main app after key injection.
-                FocusOnMainWindowAndWebView(/* showWindow= */ false);
+                await Application.Current.Dispatcher.BeginInvoke(
+                    System.Windows.Threading.DispatcherPriority.Normal, new Action(async () =>
+                    {
+                        if (vkCodes.Length == 0)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            MaybeFocusOnFocusApp();
+                            //SetForegroundWindow(focusAppHandle);
+                        }
+                        injectingKeys = true;
+                        // Use Ctrl+V to paste the text.
+                        await Task.Delay(1);
+                        keybd_event(0x11, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+                        await Task.Delay(1);
+                        keybd_event(0x56, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+                        await Task.Delay(1);
+                        keybd_event(0x56, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+                        await Task.Delay(1);
+                        keybd_event(0x11, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+                        //foreach (var vkCode in vkCodes)
+                        //{
+                        //    // TODO(cais): Check vkCode is not out of bound. Else, throw an error.
+                        //    //Debug.WriteLine($"Injecting key {vkCode} to {focusAppHandle.ToInt32()}");  // DEBUG
+                        //    // NOTE: Repeated calling of keybd_event() without a 1-ms delay between calls
+                        //    // causes glitches, e.g., when there are repeated keys such as the l's in "Hello".
+                        //    await Task.Delay(2);
+                        //    keybd_event((byte)vkCode, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+                        //}
+                        injectingKeys = false;
+                        // Focus back on the main app after key injection.
+                        // NOTE: This causes key injection to be flaky.
+                        //FocusOnMainWindowAndWebView(/* showWindow= */ false);
+                        //return;
+                    }));
                 return 0;
             }, async () =>
             {  // requestSoftKeyboardResetCallback.
