@@ -144,7 +144,10 @@ namespace WebWatcher
     /// </summary>
     public partial class MainWindow : Window
     {
+        // If this is changed, change MainWindow.xaml.
+        private static string SELF_APP_NAME = "speakfaster prototype";
         private static string FOCUS_APP_NAME = "balabolka";  // TODO(cais): Dehack
+        private static int MAX_PATH_LENGTH = 256;
         private static int MAX_SETFOREGROUND_TRIES = 8;
         private static string APP_SETTINGS_JSON_FILENAME = "app-settings.json";
         private static double WINDOW_SIZE_HEIGHT_PADDING = 24.0;
@@ -152,7 +155,7 @@ namespace WebWatcher
         private static int PAGE_LOADING_TIMEOUT_MILLIS = 15 * 1000;
         // TODO(cais): DO NOT HARDCODE. Get from API instead.
         private static double SCREEN_SCALE = 2.0;
-        private bool gazeButtonsEnabled = true;
+        private static bool gazeButtonsEnabled = true;
         private AuthWindow authWindow;
         private RepositionWindow repositionWindow;
         private int accessTokenCount = 0;
@@ -219,6 +222,10 @@ namespace WebWatcher
         {
             focusAppRunning = IsProcessRunning(FOCUS_APP_NAME);
             focusAppFocused = IsProcessFocused(FOCUS_APP_NAME);
+            if (gazeButtonsEnabled)
+            {
+                GazeCursor.SetEnabled(IsAppInForeground());
+            }
         }
 
         public async void PositioningTimerTick(object state)
@@ -274,17 +281,27 @@ namespace WebWatcher
 
         private static bool IsProcessFocused(string processName)
         {
-            const int nChars = 256; // MAX_PATH
-            StringBuilder windowText = new StringBuilder(nChars);
+            StringBuilder windowText = new StringBuilder(MAX_PATH_LENGTH);
             IntPtr handle = GetForegroundWindow();
             string lowerProcessName = processName.ToLower();
-            if (GetWindowText(handle, windowText, nChars) > 0)
+            if (GetWindowText(handle, windowText, MAX_PATH_LENGTH) > 0)
             {
                 if (windowText.ToString().ToLower().Contains(lowerProcessName))
                 {
                     focusAppHandle = handle;
                     return true;
                 }
+            }
+            return false;
+        }
+
+        private static bool IsAppInForeground()
+        {
+            IntPtr handle = GetForegroundWindow();
+            StringBuilder windowText = new StringBuilder(MAX_PATH_LENGTH);
+            if (GetWindowText(handle, windowText, MAX_PATH_LENGTH) > 0)
+            {
+                return windowText.ToString().ToLower().Contains(SELF_APP_NAME);
             }
             return false;
         }

@@ -9,7 +9,7 @@
         xmlns:local="clr-namespace:WebWatcher"
         mc:Ignorable="d"
         gaze:GazeInput.Interaction="Enabled"
-        Title=""
+        Title="SpeakFaster Prototype"
         WindowStyle="None"
         WindowStartupLocation="Manual"
         Left="36"
