@@ -22,16 +22,46 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction.Device
         private volatile int _waitEpoch;
         private string _version = "";
 
+        // A callback for device status. Argument: a boolean that indicates
+        // whether the device is connected. The int return value is currently
+        // not used.
+        private Func<bool, int> deviceStatusCallback = null;
+        private Thread workerThread = null;
+        private static bool workerEnded = false;
+
+        public void ReigsterDeviceStatusCallback(Func<bool, int> callback)
+        {
+            deviceStatusCallback = callback;
+        }
+
+        public void ClearDeviceConnectionFailureCallback()
+        {
+            deviceStatusCallback = null;
+        }
+
         private GazeDevice()
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
 
-            var thread = new Thread(Worker);
-            thread.Start();
+            workerThread = new Thread(Worker);
+            workerThread.Start();
+        }
+
+        public void MaybeReconnect()
+        {
+            if (workerThread == null || !workerEnded)
+            {
+                return;
+            }
+            workerThread.Join();
+            Debug.WriteLine("Trying to re-establish device connection");
+            workerThread = new Thread(Worker);
+            workerThread.Start();
         }
 
         private void Worker()
         {
+            workerEnded = false;
             // TODO(cais): Better error message.
             if (Interop.tobii_get_api_version(out var version) == tobii_error_t.TOBII_ERROR_NO_ERROR)
             {
@@ -67,6 +97,10 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction.Device
                     deviceContext = IntPtr.Zero;
                 }
                 var deviceContexts = new[] { deviceContext };
+                if (deviceStatusCallback != null)
+                {
+                    _ = deviceStatusCallback(/* isConnected= */ true);
+                }
 
                 // This sample will collect 1000 gaze points
                 while (!_dispatcher.HasShutdownStarted)
@@ -78,7 +112,25 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction.Device
                         Check(result);
 
                         // Process callbacks on this thread if data is available
-                        Check(Interop.tobii_device_process_callbacks(deviceContext));
+                        try
+                        {
+                            Check(Interop.tobii_device_process_callbacks(deviceContext));
+                        }
+                        catch (Exception exception)
+                        {
+                            if (exception.Message == tobii_error_t.TOBII_ERROR_CONNECTION_FAILED.ToString())
+                            {
+                                if (deviceStatusCallback != null)
+                                {
+                                    _ = deviceStatusCallback(/* isConnected= */ false);
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                throw exception;
+                            }
+                        }
                     }
                     else
                     {
@@ -86,8 +138,6 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction.Device
                     }
                 }
 
-                // Cleanup
-                Debug.WriteLine("Closing Tobii");
                 if (deviceContext != IntPtr.Zero)
                 {
                     Check(Interop.tobii_gaze_point_unsubscribe(deviceContext));
@@ -98,7 +148,13 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction.Device
             else
             {
                 Debug.WriteLine("Could not start Tobii device.");
+                workerEnded = true;
+                if (deviceStatusCallback != null)
+                {
+                    _ = deviceStatusCallback(/* isConnected= */ false);
+                }
             }
+            workerEnded = true;
         }
 
         private void DoWaiting()
@@ -147,7 +203,6 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction.Device
         {
             if (error != tobii_error_t.TOBII_ERROR_NO_ERROR)
             {
-                // TODO(cais): Add error handling.
                 throw new Exception(error.ToString());
             }
         }

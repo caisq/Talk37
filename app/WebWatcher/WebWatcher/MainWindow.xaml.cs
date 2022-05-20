@@ -1,5 +1,6 @@
 ﻿using CefSharp;
 using Microsoft.Toolkit.Uwp.Input.GazeInteraction;
+using Microsoft.Toolkit.Uwp.Input.GazeInteraction.Device;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -153,6 +154,7 @@ namespace WebWatcher
         private static double WINDOW_SIZE_HEIGHT_PADDING = 24.0;
         private static double WINDOW_SIZE_WIDTH_PADDING = 24.0;
         private static int PAGE_LOADING_TIMEOUT_MILLIS = 15 * 1000;
+        private static int EYE_TRACKER_STATUS_POLL_PERIOD_MILLIS = 5 * 1000;
         // TODO(cais): DO NOT HARDCODE. Get from API instead.
         private static double SCREEN_SCALE = 2.0;
         private static bool gazeButtonsEnabled = true;
@@ -168,6 +170,7 @@ namespace WebWatcher
         private readonly KeyLogger keyLogger;
         private readonly System.Threading.Timer timer;
         private readonly System.Threading.Timer positioningTimer;
+        private readonly System.Threading.Timer deviceConnectionTimer;
         private System.Timers.Timer pageLoadingTimer;
         private bool timeoutDialogShown = false;
         private CefSharp.DevTools.DevToolsClient devToolsClient;
@@ -185,6 +188,44 @@ namespace WebWatcher
             timer.Change(0, 2 * 1000);
             positioningTimer = new System.Threading.Timer(PositioningTimerTick);
             positioningTimer.Change(0, 5 * 1000);
+            deviceConnectionTimer = new System.Threading.Timer(DeviceConnectionTimerTick);
+            deviceConnectionTimer.Change(EYE_TRACKER_STATUS_POLL_PERIOD_MILLIS,
+                                         EYE_TRACKER_STATUS_POLL_PERIOD_MILLIS);
+            GazeDevice.Instance.ReigsterDeviceStatusCallback(DeviceStatusCallback);
+        }
+
+        private int DeviceStatusCallback(bool isConnected)
+        {
+            string status;
+            if (isConnected)
+            {
+                Debug.WriteLine("Eye tracking device is connected.");
+                status = "connected";
+            }
+            else
+            {
+                Debug.WriteLine("Eye tracking device is disconnected.");
+                status = "disconnected";
+            }
+            TheBrowser.ExecuteScriptAsync($"window.eyeTrackerStatusHook('{status}')");
+            return 0;
+        }
+
+        public void DeviceConnectionTimerTick(object state)
+        {
+            if (Application.Current == null)
+            {
+                return;
+            }
+            _ = Application.Current.Dispatcher.BeginInvoke(
+                System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                {
+                    if (GazeDevice.Instance == null)
+                    {
+                        return;
+                    }
+                    GazeDevice.Instance.MaybeReconnect();
+                }));
         }
 
         private void KeyboardHookHandler(int vkCode)
@@ -199,6 +240,10 @@ namespace WebWatcher
         }
         public void PageLoadingTimerTick(object state, System.Timers.ElapsedEventArgs e)
         {
+            if (Application.Current == null)
+            {
+                return;
+            }
             _ = Application.Current.Dispatcher.BeginInvoke(
                 System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                 {

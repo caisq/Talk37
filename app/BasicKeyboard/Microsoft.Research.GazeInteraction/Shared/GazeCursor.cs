@@ -40,6 +40,7 @@ namespace Microsoft.Toolkit.Uwp.Input.GazeInteraction
         private readonly float _scalingY;
 #endif
 
+
         public void LoadSettings(IDictionary<string, object> settings)
         {
             if (settings.ContainsKey("GazeCursor.CursorVisibility"))
