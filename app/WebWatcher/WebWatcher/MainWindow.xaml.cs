@@ -165,6 +165,7 @@ namespace WebWatcher
         private static bool focusAppFocused;
         private static IntPtr focusAppHandle = new IntPtr(-1);
         private IntPtr hThisWindow = new IntPtr(-1);
+        private bool isTheBrowserInitialized = false;
         private readonly Dictionary<string, HashSet<string>> componentButtons =
             new Dictionary<string, HashSet<string>>();
         private readonly KeyLogger keyLogger;
@@ -179,7 +180,6 @@ namespace WebWatcher
         private const UInt32 KEYEVENTF_KEYUP = 0x0002;
         private double windowTop = -1;
         private double windowBottom = -1;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -207,8 +207,17 @@ namespace WebWatcher
                 Debug.WriteLine("Eye tracking device is disconnected.");
                 status = "disconnected";
             }
-            TheBrowser.ExecuteScriptAsync($"window.eyeTrackerStatusHook('{status}')");
+            BrowserExecuteScriptAsync($"window.eyeTrackerStatusHook('{status}')");
             return 0;
+        }
+
+        private void BrowserExecuteScriptAsync(string jsCode)
+        {
+            if (TheBrowser == null || !isTheBrowserInitialized)
+            {
+                return;
+            }
+            TheBrowser.ExecuteScriptAsync(jsCode);
         }
 
         public void DeviceConnectionTimerTick(object state)
@@ -236,7 +245,7 @@ namespace WebWatcher
             }
             // For virtual key codes, see https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
             Debug.WriteLine($"Key in focus app: {vkCode}, {(char)vkCode}");  // DEBUG
-            TheBrowser.ExecuteScriptAsync($"window.externalKeypressHook({vkCode}, true)");
+            BrowserExecuteScriptAsync($"window.externalKeypressHook({vkCode}, true)");
         }
         public void PageLoadingTimerTick(object state, System.Timers.ElapsedEventArgs e)
         {
@@ -520,6 +529,7 @@ namespace WebWatcher
                     }));
                 return 0;
             });
+            TheBrowser.IsBrowserInitializedChanged += OnIsBrowserInitializedChanged;
             TheBrowser.JavascriptObjectRepository.Register(
                 "boundListener", listener, isAsync: true, options: BindingOptions.DefaultBinder);
             // TODO(cais): Fix the bug where typing doesn't work after clicking Expand
@@ -576,7 +586,7 @@ namespace WebWatcher
                         {
                             Debug.WriteLine(
                                 $"Received new access token (#{accessTokenCount}): {accessToken}");
-                            TheBrowser.ExecuteScriptAsync($"window.externalAccessTokenHook('{accessToken}')");
+                            BrowserExecuteScriptAsync($"window.externalAccessTokenHook('{accessToken}')");
                         }
                         accessTokenCount++;
                         return 0;
@@ -608,22 +618,21 @@ namespace WebWatcher
                 });
             repositionWindow.Show();
         }
+        void OnIsBrowserInitializedChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (TheBrowser.IsBrowserInitialized)
+            {
+                isTheBrowserInitialized = true;
+            }
+        }
         void Window_Activated(object sender, EventArgs e)
         {
-            if (TheBrowser == null)
-            {
-                return;
-            }
-            TheBrowser.ExecuteScriptAsync($"window.setHostWindowFocus(true)");
+            BrowserExecuteScriptAsync("window.setHostWindowFocus(true)");
         }
 
         void Window_Deactivated(object sender, EventArgs e)
         {
-            if (TheBrowser == null)
-            {
-                return;
-            }
-            TheBrowser.ExecuteScriptAsync($"window.setHostWindowFocus(false)");
+            BrowserExecuteScriptAsync("window.setHostWindowFocus(false)");
         }
 
         void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
