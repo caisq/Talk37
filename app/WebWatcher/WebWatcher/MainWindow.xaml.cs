@@ -213,7 +213,7 @@ namespace WebWatcher
 
         private void BrowserExecuteScriptAsync(string jsCode)
         {
-            if (TheBrowser == null || !isTheBrowserInitialized)
+            if (TheBrowser == null || !isTheBrowserInitialized || TheBrowser.IsDisposed)
             {
                 return;
             }
@@ -414,7 +414,9 @@ namespace WebWatcher
                     await Application.Current.Dispatcher.BeginInvoke(
                         System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                         {
-                            Clipboard.SetText(text);
+                            // NOTE: See https://stackoverflow.com/a/17678542. SetText() throws
+                            // exception on certain versions of Balabolka.
+                            Clipboard.SetDataObject(text);
                         }));
                 }
                 if (!focusAppRunning || focusAppHandle.ToInt32() <= 0)
