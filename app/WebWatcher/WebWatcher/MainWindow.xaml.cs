@@ -18,7 +18,11 @@ namespace WebWatcher
 {
     class BoundListener
     {
-        private readonly Func<string, float[][], Task<int>> updateButtonBoxesCallback;
+        // Each float[][] argument can have lengths 4 or 5.
+        // - If length is 4, it is interpreted as left, top, right, bottom of the button.
+        // - If length is 5, the extra element is interpreted as the custom ThresholdDuration
+        //   with a unit of millisecond.
+        private readonly Func<string, float[][],  Task<int>> updateButtonBoxesCallback;
         private readonly Func<Task<int>> bringWindowToForegroundCallback;
         private readonly Func<Task<int>> bringFocusAppToForegroundCallback;
         private readonly Func<bool> toggleGazeButtonsStateCallback;
@@ -807,6 +811,13 @@ namespace WebWatcher
                         Opacity = 0.01  // This makes the buttons transparent/translucent.
                     };
                     gazeButton.Tag = boxString;
+                    if (box.Length > 4)
+                    {
+                        // The last element is interpreted as the custom ThresholdDuration in
+                        // milliseconds.
+                        TimeSpan customThresholdDuration = TimeSpan.FromMilliseconds(box[4]);
+                        gazeButton.SetValue(GazeInput.ThresholdDurationProperty, customThresholdDuration);
+                    }
                     gazeButton.Click += GazeButton_Click;
                     buttonKeys.Add(boxString);
                     overlayCanvas.Children.Add(gazeButton);
