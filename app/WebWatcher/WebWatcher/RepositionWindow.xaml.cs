@@ -12,7 +12,7 @@ namespace WebWatcher
         private Func<WindowVerticalPosition, int> positionCallback;
 
         public const int MAIN_WINDOW_TOP_TOP_VALUE = 40;
-        public const int MAIN_WINDOW_BOTTOM_TOP_VALUE = 450;
+        public const int MAIN_WINDOW_BOTTOM_TOP_VALUE = 435;
         const int REPOSITION_WINDOW_TOP_TOP_VALUE = 40;
         const int REPOSITION_WINDOW_BOTTOM_TOP_VALUE = 800;
         public RepositionWindow()

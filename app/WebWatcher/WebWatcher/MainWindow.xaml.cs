@@ -303,7 +303,7 @@ namespace WebWatcher
                 await Application.Current.Dispatcher.BeginInvoke(
                         System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                         {
-                            Top = 450;  // TODO(cais): Do not hardcode.
+                            Top = RepositionWindow.MAIN_WINDOW_BOTTOM_TOP_VALUE;
                             Debug.WriteLine("Moved self to bottom");  // DEBUG
                             UpdateWindowGeometryInternal();
                         }));
@@ -314,7 +314,7 @@ namespace WebWatcher
                 await Application.Current.Dispatcher.BeginInvoke(
                         System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                         {
-                            Top = 40;  // TODO(cais): Do not hardcode.
+                            Top = RepositionWindow.MAIN_WINDOW_TOP_TOP_VALUE;
                             Debug.WriteLine("Moved self to top");  // DEBUG
                             UpdateWindowGeometryInternal();
                         }));

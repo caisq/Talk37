@@ -14,7 +14,7 @@
         WindowStartupLocation="Manual"
         Left="36"
         Top="40"
-        Height="468"
+        Height="488"
         Width="1300"
         Topmost="False"
         BorderBrush="Cyan"
